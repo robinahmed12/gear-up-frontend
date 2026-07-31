@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tailwind v4 uses CSS-first config — there's no tailwind.config.ts.
+ * Run `npx shadcn init` to populate this file with the full design-token
+ * set (colors, radius, sidebar tokens, etc.) in the same oklch()-based
+ * format the reference repo uses. The block below is a minimal starting
+ * point so the app has something to render before that step.
+ */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.148 0.004 228.8);
+  --primary: oklch(0.508 0.118 165.612);
+  --primary-foreground: oklch(0.979 0.021 166.113);
+  --border: oklch(0.925 0.005 214.3);
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: oklch(0.148 0.004 228.8);
+  --foreground: oklch(0.979 0.021 166.113);
+}

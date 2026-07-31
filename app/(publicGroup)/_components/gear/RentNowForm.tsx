@@ -1,0 +1,1 @@
+// Client Component — React Hook Form + Zod (lib/validation.ts rentNowSchema), date-range picker, prevents past/overlapping dates, calls (dashboardGroup)/_actions/rentalActions.ts createRentalAction on submit (redirects to login if unauthenticated)

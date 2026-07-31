@@ -1,0 +1,1 @@
+// ALL shared types in one file (mirrors the reference repo's single lib/types.ts convention): User, Role, Gear, Category, RentalOrder, RentalStatus, Payment, PaymentStatus, PaymentMethod, Review, plus the ApiSuccessResponse<T>/ApiErrorResponse envelope shape matching the backend

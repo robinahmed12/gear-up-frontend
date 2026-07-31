@@ -1,0 +1,1 @@
+// Shared create/edit gear form — React Hook Form + Zod (gearSchema), title/description/brand/price/stock/category-select/image URLs/availability toggle. Used by both provider-dashboard/gear/new and .../[id]/edit
