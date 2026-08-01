@@ -1,11 +1,9 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-
-import { getGearReviews } from "@/services/GearService/getGearReviews";
-
-import RentNowForm from "@/components/gear/RentNowForm";
-import ReviewList from "@/components/gear/ReviewList";
 import { getGearById } from "../../_actions/getGearById";
+import { getGearReviews } from "../../_actions/getGearReviews";
+import ReviewList from "../../_components/reviews/ReviewList";
+import RentNowForm from "../../_components/gear/RentNowForm";
 
 
 interface GearDetailsPageProps {
