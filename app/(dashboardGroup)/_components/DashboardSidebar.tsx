@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { customerSidebarItems } from "../_config/customerSidebarItems";
+import { providerSidebarItems } from "../_config/providerSidebarItems";
+import { adminSidebarItems } from "../_config/adminSidebarItems";
 
 type SidebarItem = {
   title: string;
@@ -30,14 +32,14 @@ export default function Sidebar({ user }: SidebarProps) {
 
       break;
 
-    // future:
-    // case "PROVIDER":
-    //   sidebarItems = providerSidebarItems;
-    //   break;
+   
+     case "PROVIDER":
+      sidebarItems = providerSidebarItems;
+      break;
 
-    // case "ADMIN":
-    //   sidebarItems = adminSidebarItems;
-    //   break;
+    case "ADMIN":
+      sidebarItems = adminSidebarItems;
+      break;
 
     default:
       sidebarItems = [];

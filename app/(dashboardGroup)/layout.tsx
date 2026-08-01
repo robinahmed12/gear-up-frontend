@@ -1,17 +1,38 @@
-// Shared shell for all 3 roles — async Server Component, calls service/getMe.ts, redirects to /login if unauthenticated (defense-in-depth alongside proxy.ts), renders <Navbar user={user}/> + role-matched <DashboardSidebar user={user}/> from _components + _config
+import { redirect } from "next/navigation";
 
 import { Navbar } from "@/components/shared/navbar";
-import { User } from "@/lib/types";
+import Sidebar from "./_components/DashboardSidebar";
+
 import { getMe } from "@/service/getMe";
+import { User } from "@/lib/types";
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
 
 export default async function DashboardgroupLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const user: User | null = await getMe();
-  return <div>
-    <Navbar user={user}/>
-    {children}
-    </div>;
+}: DashboardLayoutProps) {
+  const user = (await getMe()) as User | null;
+
+  // Defense in depth (middleware should also protect these routes)
+  if (!user) {
+    redirect("/auth/login");
+  }
+
+  return (
+    <div className="flex min-h-screen bg-muted/20">
+      {/* Sidebar */}
+      <Sidebar user={user} />
+
+      {/* Main Content */}
+      <div className="flex flex-1 flex-col">
+        <Navbar user={user} />
+
+        <main className="flex-1 p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 }
