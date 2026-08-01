@@ -1,12 +1,17 @@
-// Renders <LoginForm/>, reads ?redirectTo= set by proxy.ts so post-login redirect returns the user where they were headed
 
-export default function AuthgroupLoginPage() {
+// app/(authGroup)/login/page.tsx
+import { LoginForm } from '../_components/LoginForm';
+
+export default function LoginPage() {
   return (
-    <div className="p-6">
-      <h1 className="text-lg font-semibold">authGroup / login — page</h1>
-      <p className="text-sm text-muted-foreground">
-        Placeholder — see the comment above this component for what belongs here.
-      </p>
+    <div className="flex min-h-[80vh] items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold">Welcome back</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Log in to your GearUp account.</p>
+        </div>
+        <LoginForm />
+      </div>
     </div>
   );
 }

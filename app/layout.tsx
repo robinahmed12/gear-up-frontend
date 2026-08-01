@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-// Root layout — <html>/<body>, wraps <QueryClientProviderWrapper/> (lib/query-client.ts) + <Toaster/> (sonner), imports globals.css
 
 export const metadata: Metadata = {
   title: 'GearUp',
@@ -15,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+    
+      <body>
+        {children}
+        </body>
     </html>
   );
 }

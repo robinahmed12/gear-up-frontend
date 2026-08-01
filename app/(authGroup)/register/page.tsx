@@ -1,12 +1,18 @@
-// Renders <RegisterForm/> with role selection (CUSTOMER/PROVIDER — ADMIN is never self-registered)
+// app/(authGroup)/register/page.tsx
+import { RegisterForm } from '../_components/RegisterForm';
 
-export default function AuthgroupRegisterPage() {
+export default function RegisterPage() {
   return (
-    <div className="p-6">
-      <h1 className="text-lg font-semibold">authGroup / register — page</h1>
-      <p className="text-sm text-muted-foreground">
-        Placeholder — see the comment above this component for what belongs here.
-      </p>
+    <div className="flex min-h-[80vh] items-center justify-center p-6">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold">Create your account</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Rent gear as a customer, or list your own as a provider.
+          </p>
+        </div>
+        <RegisterForm />
+      </div>
     </div>
   );
 }

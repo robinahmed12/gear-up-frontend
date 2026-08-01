@@ -1,9 +1,12 @@
-// Centered auth layout shared by login/register
+import { Navbar } from "@/components/shared/navbar";
 
 export default function AuthgroupLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div>{children}</div>;
+  return <div>
+    <Navbar/>
+    {children}
+    </div>;
 }
