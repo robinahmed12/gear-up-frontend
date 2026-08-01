@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import './globals.css';
-
+import type { Metadata } from "next";
+import "./globals.css";
+import QueryProvider from "@/lib/query-client";
 
 export const metadata: Metadata = {
-  title: 'GearUp',
-  description: 'Rent sports & outdoor gear instantly',
+  title: "GearUp",
+  description: "Rent sports & outdoor gear instantly",
 };
 
 export default function RootLayout({
@@ -14,10 +14,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-    
       <body>
-        {children}
-        </body>
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }
