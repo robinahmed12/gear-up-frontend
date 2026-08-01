@@ -58,7 +58,7 @@ export default function GearGrid({
                   gear.image ??
                   "/placeholder.png"
                 }
-                alt={gear.name}
+                alt={"photo"}
                 fill
                 className="object-cover"
               />
