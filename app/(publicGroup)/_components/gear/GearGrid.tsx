@@ -1,7 +1,7 @@
-// Responsive grid of <GearCard>, used on home + browse pages
+// app/(publicGroup)/_components/gear/GearGrid.tsx
 import Image from "next/image";
 import Link from "next/link";
-
+import { PackageSearch } from "lucide-react";
 
 interface Gear {
   id: string;
@@ -14,116 +14,77 @@ interface Gear {
   availability?: boolean;
 }
 
-
-
 interface GearGridProps {
   gears: Gear[];
 }
 
-
-
-export default function GearGrid({
-  gears,
-}: GearGridProps) {
-
-
+export default function GearGrid({ gears }: GearGridProps) {
   if (!gears.length) {
     return (
-      <div className="rounded-lg border p-10 text-center">
-        No gear found.
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">
+        <PackageSearch className="h-10 w-10 text-muted-foreground" />
+        <p className="mt-4 text-sm font-medium text-foreground">
+          No gear matches your filters
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Try widening your price range or clearing a filter.
+        </p>
       </div>
     );
   }
 
-
-
   return (
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {gears.map((gear) => (
+        <Link
+          key={gear.id}
+          href={`/gear/${gear.id}`}
+          className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <div className="relative h-52 w-full overflow-hidden bg-muted">
+            <Image
+              src={gear.image ?? "/placeholder.png"}
+              alt={"picture"}
+              fill
+              sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <span
+              className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-xs font-medium ${
+                gear.availability
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-destructive text-destructive-foreground"
+              }`}
+            >
+              {gear.availability ? "Available" : "Unavailable"}
+            </span>
+          </div>
 
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-
-
-      {
-        gears.map((gear)=>(
-          <div
-            key={gear.id}
-            className="overflow-hidden rounded-xl border bg-white shadow-sm"
-          >
-
-
-            <div className="relative h-56 w-full">
-
-              <Image
-              
-                src={
-                  gear.image ??
-                  "/placeholder.png"
-                }
-                alt={"photo"}
-                fill
-                className="object-cover"
-              />
-
-            </div>
-
-
-
-            <div className="space-y-3 p-5">
-
-
-              <h3 className="text-lg font-semibold">
-                {gear.name}
-              </h3>
-
-
-
-              <p className="text-sm text-muted-foreground">
-                {gear.category?.name}
+          <div className="space-y-2 p-4">
+            {gear.category?.name && (
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {gear.category.name}
               </p>
+            )}
 
+            <h3 className="line-clamp-1 text-base font-semibold text-foreground">
+              {gear.name}
+            </h3>
 
-
-              <p className="font-medium">
+            <div className="flex items-baseline justify-between pt-1">
+              <p className="text-lg font-bold text-foreground">
                 ৳{gear.pricePerDay}
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm font-normal text-muted-foreground">
                   /day
                 </span>
               </p>
-
-
-
-              <span
-                className={`inline-block rounded-full px-3 py-1 text-xs ${
-                  gear.availability
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-              >
-                {
-                  gear.availability
-                    ? "Available"
-                    : "Unavailable"
-                }
+              <span className="text-sm font-medium text-accent transition-transform group-hover:translate-x-0.5">
+                View →
               </span>
-
-
-
-              <Link
-                href={`/gear/${gear.id}`}
-                className="block rounded-md bg-black px-4 py-2 text-center text-white"
-              >
-                View Details
-              </Link>
-
-
             </div>
-
-
           </div>
-        ))
-      }
-
-
+        </Link>
+      ))}
     </div>
-
   );
 }

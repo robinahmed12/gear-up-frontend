@@ -12,7 +12,7 @@ export function ProviderCta() {
         <div className="relative max-w-xl">
           <h2 className="text-2xl font-bold sm:text-3xl">Have gear sitting in storage?</h2>
           <p className="mt-3 text-sm text-accent-foreground/85 sm:text-base">
-            List it on GearUp and earn from the days it's not being used. You set the price,
+            List it on GearUp and earn from the days it is not being used. You set the price,
             the stock, and the availability — we handle bookings and payments.
           </p>
           <Button asChild size="lg" className="mt-6 bg-primary text-primary-foreground hover:bg-primary/90">

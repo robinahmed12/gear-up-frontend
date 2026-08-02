@@ -43,7 +43,7 @@ export function Footer() {
             </Link>
             <p className="mt-3 max-w-xs text-sm text-sidebar-foreground/70">
               Rent sports and outdoor gear by the day, from real local
-              providers. No buying what you'll only use once.
+              providers. No buying what you will only use once.
             </p>
 
             {/* Social links */}
