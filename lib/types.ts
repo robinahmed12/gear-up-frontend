@@ -1,4 +1,5 @@
 
+
 export type Role = 'CUSTOMER' | 'PROVIDER' | 'ADMIN';
 export type UserStatus = 'ACTIVE' | 'SUSPENDED';
 
@@ -43,6 +44,12 @@ export interface Gear {
   categoryId: string;
   category?: Category;
   providerId: string;
+  provider: provider
+}
+
+export interface provider {
+  id: number;
+  name: string
 }
 
 export interface RentalOrder {

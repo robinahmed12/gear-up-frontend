@@ -1,12 +1,31 @@
 // Renders <AdminGearTable/>. Consumes service/getAdminGear.ts
+import { getAdminGear } from "@/service/getAdminGear";
+import AdminGearTable from "../../_components/admin/AdminGearTable";
 
-export default function DashboardgroupAdminDashboardGearPage() {
+
+export default async function DashboardgroupAdminDashboardGearPage() {
+
+  const response = await getAdminGear();
+
+  const gears = response.data ?? [];
+
+
   return (
-    <div className="p-6">
-      <h1 className="text-lg font-semibold">dashboardGroup / admin-dashboard / gear — page</h1>
-      <p className="text-sm text-muted-foreground">
-        Placeholder — see the comment above this component for what belongs here.
-      </p>
+    <div className="space-y-6">
+
+      <div>
+        <h1 className="text-3xl font-bold">
+          Gear Moderation
+        </h1>
+
+        <p className="text-muted-foreground">
+          Review all gear listings from providers.
+        </p>
+      </div>
+
+
+      <AdminGearTable gears={gears} />
+
     </div>
   );
 }
