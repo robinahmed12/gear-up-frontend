@@ -7,16 +7,12 @@ import { revalidateTag } from "next/cache";
 
 const BACKEND_API_URL = process.env.BACKEND_API_URL || "http://localhost:5000";
 
-async function getAuthCookie() {
+async function getAccessToken() {
   const cookieStore = await cookies();
 
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!accessToken) {
-    return null;
-  }
-
-  return `accessToken=${accessToken}`;
+  return accessToken ?? null;
 }
 
 // Create Rental
@@ -27,9 +23,9 @@ export async function createRentalAction(
   endDate: string,
 ) {
   try {
-    const cookie = await getAuthCookie();
+    const accessToken = await getAccessToken();
 
-    if (!cookie) {
+    if (!accessToken) {
       return {
         success: false,
         unauthorized: true,
@@ -39,23 +35,17 @@ export async function createRentalAction(
 
     const response = await fetch(`${BACKEND_API_URL}/api/rentals`, {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
-        Cookie: cookie,
+        Authorization: `Bearer ${accessToken}`,
       },
-
       body: JSON.stringify({
         gearId,
-
         quantity,
-
         startDate,
-
         endDate,
       }),
     });
-
     const data = await response.json();
 
     if (!response.ok) {
@@ -84,23 +74,14 @@ export async function createRentalAction(
 
 export async function cancelRentalAction(id: string) {
   try {
-    const cookie = await getAuthCookie();
-
-    if (!cookie) {
-      return {
-        success: false,
-        unauthorized: true,
-        message: "Please login first",
-      };
-    }
+    const accessToken = await getAccessToken();
 
     const response = await fetch(
       `${BACKEND_API_URL}/api/rentals/${id}/cancel`,
       {
         method: "PATCH",
-
         headers: {
-          Cookie: cookie,
+          Authorization: `Bearer ${accessToken}`,
         },
       },
     );

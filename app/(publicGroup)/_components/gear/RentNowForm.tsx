@@ -102,7 +102,7 @@ export default function RentNowForm({
 
       toast.success("Rental request created");
 
-      router.push("/dashboard/customer/orders");
+      router.push("/dashboard/my-orders");
     } catch {
       toast.error("Something went wrong");
     } finally {
