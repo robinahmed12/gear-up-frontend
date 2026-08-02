@@ -29,7 +29,6 @@ export async function getMe() {
 
     const result = await response.json();
 
-    console.log("ME RESPONSE:", result);
 
     if (!response.ok) {
       return {
@@ -41,8 +40,7 @@ export async function getMe() {
 
     return result.data.user;
   } catch (error) {
-    console.log("GET ME ERROR:", error);
-
+    
     return {
       success: false,
       data: null,

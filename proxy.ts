@@ -18,7 +18,7 @@ export async function proxy(request: NextRequest) {
   let decodedAccessToken = accessToken
     ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)
     : null;
-    console.log("decode",decodedAccessToken)
+  
 
   const decodedRefreshToken = refreshToken
     ? jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET as string)

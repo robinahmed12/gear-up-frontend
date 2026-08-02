@@ -1,12 +1,28 @@
 // Renders <UserTable/>. Consumes service/getAdminUsers.ts
+import { getAdminUsers } from "@/service/getAdminUsers";
+import UserTable from "../../_components/admin/UserTable";
 
-export default function DashboardgroupAdminDashboardUsersPage() {
+export default async function AdminDashboardUsersPage() {
+  const response = await getAdminUsers();
+  console.log(response, "res")
+
   return (
-    <div className="p-6">
-      <h1 className="text-lg font-semibold">dashboardGroup / admin-dashboard / users — page</h1>
-      <p className="text-sm text-muted-foreground">
-        Placeholder — see the comment above this component for what belongs here.
-      </p>
+    <div className="space-y-6">
+
+      <div>
+        <h1 className="text-3xl font-bold">
+          User Management
+        </h1>
+
+        <p className="text-muted-foreground">
+          Search, suspend and activate users.
+        </p>
+      </div>
+
+      <UserTable
+        initialData={response.data ?? []}
+      />
+
     </div>
   );
 }

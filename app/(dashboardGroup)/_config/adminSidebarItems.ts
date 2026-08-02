@@ -16,22 +16,22 @@ export type SidebarItem = {
 export const adminSidebarItems: SidebarItem[] = [
   {
     title: "Overview",
-    href: "/dashboard/admin",
+    href: "/admin-dashboard",
     icon: LayoutDashboard,
   },
   {
     title: "Users",
-    href: "/dashboard/admin/users",
+    href: "/admin-dashboard/users",
     icon: Users,
   },
   {
     title: "Gear Moderation",
-    href: "/dashboard/admin/gear",
+    href: "/admin-dashboard/gear",
     icon: ShieldCheck,
   },
   {
     title: "Rental Oversight",
-    href: "/dashboard/admin/rentals",
+    href: "/admin-dashboard/rentals",
     icon: ClipboardCheck,
   },
 ];
