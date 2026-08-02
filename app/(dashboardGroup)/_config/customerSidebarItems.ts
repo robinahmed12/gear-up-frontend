@@ -11,28 +11,28 @@ export const customerSidebarItems = [
 
   {
     title: "Overview",
-    href: "/dashboard/customer",
+    href: "/dashboard",
     icon: LayoutDashboard,
   },
 
 
   {
     title: "My Orders",
-    href: "/dashboard/customer/orders",
+    href: "/dashboard/my-orders",
     icon: ShoppingBag,
   },
 
 
   {
     title: "Payment History",
-    href: "/dashboard/customer/payments",
+    href: "/dashboard/payment-history",
     icon: CreditCard,
   },
 
 
   {
     title: "Profile",
-    href: "/dashboard/customer/profile",
+    href: "/dashboard/profile",
     icon: User,
   },
 

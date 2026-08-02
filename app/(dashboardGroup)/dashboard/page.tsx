@@ -1,20 +1,6 @@
 // Customer overview — renders <OrderHistoryTable/> + <PaymentHistoryTable/>. Consumes service/getMyRentals.ts, service/getMyPayments.ts for initial SSR data
 
-import { getMyPayments } from "@/service/getMyPayments";
-import { getMyRentals } from "@/service/getMyRentals";
-import OrderHistoryTable from "../_components/customer/OrderHistoryTable";
-import PaymentHistoryTable from "../_components/customer/PaymentHistoryTable";
-
-export default async function DashboardgroupDashboardPage() {
-  const [rentalsResponse, paymentsResponse] = await Promise.all([
-    getMyRentals(),
-    getMyPayments(),
-  ]);
-
-  const rentals = rentalsResponse?.data ?? [];
-
-  const payments = paymentsResponse?.data ?? [];
-
+export default async function CustomerDashboardPage() {
   return (
     <main className="container mx-auto space-y-8 px-4 py-8">
       {/* Header */}
@@ -28,7 +14,7 @@ export default async function DashboardgroupDashboardPage() {
       </div>
 
       {/* Order History */}
-
+      {/* 
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Rental Order History</h2>
@@ -39,11 +25,11 @@ export default async function DashboardgroupDashboardPage() {
         </div>
 
         <OrderHistoryTable rentals={rentals} />
-      </section>
+      </section> */}
 
       {/* Payment History */}
 
-      <section className="space-y-4">
+      {/* <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Payment History</h2>
 
@@ -53,7 +39,7 @@ export default async function DashboardgroupDashboardPage() {
         </div>
 
         <PaymentHistoryTable payments={payments} />
-      </section>
+      </section> */}
     </main>
   );
 }
