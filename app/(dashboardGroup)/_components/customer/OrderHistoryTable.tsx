@@ -78,7 +78,7 @@ export default function OrderHistoryTable({
               <td className="p-4">
                 {rental.status === "CONFIRMED" && (
                   <Button asChild>
-                    <Link href={`/dashboard/customer/orders/${rental.id}/pay`}>
+                    <Link href={`/dashboard/orders/${rental.id}/pay`}>
                       Pay Now
                     </Link>
                   </Button>

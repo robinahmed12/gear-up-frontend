@@ -16,7 +16,7 @@ export default async function PaymentCancelPage({ searchParams }: PaymentCancelP
         <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
           <XCircle className="h-8 w-8 text-destructive" />
         </span>
-        <h1 className="mt-5 text-2xl font-bold text-foreground">Payment didn't go through</h1>
+        <h1 className="mt-5 text-2xl font-bold text-foreground">Payment did not go through</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Your order is still confirmed and waiting — no charge was made. You can try again
           anytime.

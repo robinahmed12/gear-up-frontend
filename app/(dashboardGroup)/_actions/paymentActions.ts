@@ -31,7 +31,7 @@ export async function createPaymentAction(rentalOrderId: string): Promise<Create
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Bearer: `accessToken=${token}`,
+         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ rentalOrderId, method: 'STRIPE' }),
     });
