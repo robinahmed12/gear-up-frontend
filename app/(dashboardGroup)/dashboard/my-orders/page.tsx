@@ -1,6 +1,7 @@
 import { getMyRentals } from "@/service/getMyRentals";
 import OrderHistoryTable from "../../_components/customer/OrderHistoryTable";
 
+
 export default async function OrdersPage() {
   const response = await getMyRentals();
 
