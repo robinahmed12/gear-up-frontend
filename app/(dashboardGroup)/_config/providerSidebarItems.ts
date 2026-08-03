@@ -16,22 +16,22 @@ export type SidebarItem = {
 export const providerSidebarItems: SidebarItem[] = [
   {
     title: "Overview",
-    href: "/dashboard/provider",
+    href: "/provider-dashboard",
     icon: LayoutDashboard,
   },
   {
     title: "My Gear",
-    href: "/dashboard/provider/gear",
+    href: "/provider-dashboard/gear",
     icon: Package,
   },
   {
     title: "Add Gear",
-    href: "/dashboard/provider/gear/new",
+    href: "/provider-dashboard/gear/new",
     icon: PlusCircle,
   },
   {
     title: "Incoming Orders",
-    href: "/dashboard/provider/orders",
+    href: "/provider-dashboard/orders",
     icon: ClipboardList,
   },
 ];

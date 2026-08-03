@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-export default async function DashboardgroupLayout({
+export default async function DashboardGroupLayout({
   children,
 }: DashboardLayoutProps) {
   const user = (await getMe()) as User | null;
