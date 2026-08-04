@@ -24,7 +24,7 @@ export async function updateOrderStatusAction(
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `accessToken=${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ status }),
     });

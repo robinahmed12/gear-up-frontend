@@ -18,7 +18,7 @@ export async function deleteGearAction(gearId: string): Promise<ActionResult> {
 
     const res = await fetch(`${process.env.BACKEND_API_URL}/api/provider/gear/${gearId}`, {
       method: 'DELETE',
-      headers: { Cookie: `accessToken=${token}` },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
     const result = await res.json();
@@ -57,7 +57,7 @@ export async function createGearAction(input: GearFormValues): Promise<GearActio
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `accessToken=${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(input),
     });
@@ -88,7 +88,7 @@ export async function updateGearAction(
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `accessToken=${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(input),
     });
@@ -120,7 +120,7 @@ export async function toggleAvailabilityAction(
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `accessToken=${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ isAvailable }),
     });

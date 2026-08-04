@@ -24,11 +24,12 @@ export async function getAdminRentals(
     query.set('limit', String(params.limit ?? 10));
 
     const res = await fetch(`${process.env.BACKEND_API_URL}/api/admin/rentals?${query}`, {
-      headers: { Authorization: `Bearer${token}` },
+      headers: { Authorization: `Bearer ${token}` },
       cache: 'no-store',
     });
 
     const result = await res.json();
+    console.log("r", result)
 
     if (!res.ok || !result.success) {
       return { success: false, message: result.message ?? 'Failed to load rentals' };

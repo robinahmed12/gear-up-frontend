@@ -19,7 +19,7 @@ export async function updateProfileAction(input: UpdateProfileValues): Promise<A
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: `accessToken=${token}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         name: input.name,
