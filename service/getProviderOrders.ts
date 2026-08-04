@@ -25,7 +25,7 @@ export async function getProviderOrders(
     query.set('limit', String(params.limit ?? 20));
 
     const res = await fetch(`${process.env.BACKEND_API_URL}/api/provider/orders?${query}`, {
-      headers: { Cookie: `accessToken=${token}` },
+      headers: { Authorization: `Bearer s${token}` },
       next: { tags: ['provider-orders'] },
     });
 

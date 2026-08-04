@@ -37,7 +37,7 @@ export async function getMyPayments() {
         method: "GET",
 
         headers: {
-          Cookie: `accessToken=${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
 
         cache: "no-store",

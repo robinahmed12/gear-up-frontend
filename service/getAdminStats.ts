@@ -45,7 +45,7 @@ export async function getAdminStats(): Promise<{ success: boolean; data: AdminSt
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('accessToken')?.value;
-    const headers = { Cookie: `accessToken=${token}` };
+    const headers = { Authorization: `Bearer${token}` };
 
     const [usersRes, gearRes, rentalsRes] = await Promise.all([
       fetch(`${process.env.BACKEND_API_URL}/api/admin/users?limit=1000`, { headers, cache: 'no-store' }),

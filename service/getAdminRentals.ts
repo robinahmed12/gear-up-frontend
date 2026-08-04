@@ -24,7 +24,7 @@ export async function getAdminRentals(
     query.set('limit', String(params.limit ?? 10));
 
     const res = await fetch(`${process.env.BACKEND_API_URL}/api/admin/rentals?${query}`, {
-      headers: { Cookie: `accessToken=${token}` },
+      headers: { Authorization: `Bearer${token}` },
       cache: 'no-store',
     });
 

@@ -36,3 +36,24 @@ export const gearSchema = z.object({
 });
 
 export type GearFormValues = z.infer<typeof gearSchema>;
+
+
+
+export const updateProfileSchema = z.object({
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100),
+  phone: z.string().trim().max(20).optional().or(z.literal('')),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+    confirmNewPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "New passwords don't match",
+    path: ['confirmNewPassword'],
+  });
+
+export type UpdateProfileValues = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;

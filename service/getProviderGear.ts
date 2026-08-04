@@ -16,7 +16,7 @@ export async function getProviderGear(
     const res = await fetch(
       `${process.env.BACKEND_API_URL}/api/provider/gear?page=${page}&limit=20`,
       {
-        headers: { Cookie: `accessToken=${token}` },
+        headers: { Authorization: `Bearer ${token}` },
         next: { tags: ['provider-gear'] },
       },
     );
