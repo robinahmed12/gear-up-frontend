@@ -31,7 +31,7 @@ export function IncomingOrdersTable({ initialOrders }: IncomingOrdersTableProps)
     initialData: initialOrders,
     staleTime: 30 * 1000,
   });
-
+console.log("o", orders)
   const updateStatus = useUpdateOrderStatus();
 
   if (orders.length === 0) {

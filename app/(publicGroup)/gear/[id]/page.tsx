@@ -19,6 +19,7 @@ export default async function PublicGroupGearByIdPage({ params }: GearDetailsPag
     getGearById(id),
     getGearReviews(id),
   ]);
+     
 
   if (!gearResponse.success || !gearResponse.data) {
     notFound();

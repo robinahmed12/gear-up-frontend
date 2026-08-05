@@ -11,7 +11,8 @@ interface GearGridProps {
 }
 
 export default function GearGrid({ gears }: GearGridProps) {
-  console.log("GearGrid received:", gears.length);
+  
+
   if (!gears.length) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">

@@ -94,6 +94,8 @@ export function RegisterForm() {
         phone: values.phone,
       });
 
+      console.log(result, "r")
+
       if (!result.success) {
         setServerError(result.message);
         return;

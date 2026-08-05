@@ -10,7 +10,7 @@ export default async function PublicGroupLayout({
   children: React.ReactNode;
 }) {
     const result = await getMe();
-  const user = result.success ? result.data : null;
+  const user = result.success ? result.data.user : null;
   return <div>
     <Navbar user={user}/>
     {children}

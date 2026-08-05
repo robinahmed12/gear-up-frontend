@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useRentalsQuery } from "@/lib/use-rentals-query";
 import OrderStatusBadge from "./OrderStatusBadge";
 import { RentalOrder } from "@/lib/types";
+import Image from "next/image";
 
 interface OrderHistoryTableProps {
   rentals: RentalOrder[];
@@ -18,6 +19,7 @@ export default function OrderHistoryTable({
   const { data, isLoading } = useRentalsQuery();
 
   const rentals = data?.data ?? initialRentals;
+
 
   if (isLoading) {
     return (
@@ -40,7 +42,10 @@ export default function OrderHistoryTable({
       <table className="w-full text-sm">
         <thead className="border-b bg-muted">
           <tr>
-            <th className="p-4 text-left">Gear</th>
+            <th className="p-4 text-left">Image</th>
+            <th className="p-4 text-left">Gear </th>
+    
+            <th className="p-4 text-left">Customer Id</th>
 
             <th className="p-4 text-left">Dates</th>
 
@@ -53,10 +58,21 @@ export default function OrderHistoryTable({
         <tbody>
           {rentals.map((rental: any) => (
             <tr key={rental.id} className="border-b">
+              <td>
+                {rental.gear?.images?.[0] && (
+                  <Image
+                    src={rental.gear.images[0]}
+                    alt="Gear image"
+                    width={200}
+                    height={150}
+                  />
+                )}
+              </td>
+
               <td className="p-4">
                 <div>
                   <p className="font-medium">
-                    {rental.gear?.name ?? "Gear Item"}
+                    {rental.gear?.title ?? "Gear Item"}
                   </p>
 
                   <p className="text-xs text-muted-foreground">
@@ -64,6 +80,7 @@ export default function OrderHistoryTable({
                   </p>
                 </div>
               </td>
+              <td>{rental.customerId}</td>
 
               <td className="p-4">
                 <p>{new Date(rental.startDate).toLocaleDateString()}</p>

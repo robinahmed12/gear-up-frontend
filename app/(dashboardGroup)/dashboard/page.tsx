@@ -109,7 +109,7 @@ export default async function CustomerDashboardPage() {
           <div className="flex items-center justify-between border-b border-border p-5">
             <h2 className="text-sm font-semibold text-foreground">Recent rentals</h2>
             <Link
-              href="/dashboard/orders"
+              href="/dashboard/my-orders"
               className="flex items-center gap-1 text-xs font-medium text-primary hover:underline"
             >
               View all
@@ -155,7 +155,7 @@ export default async function CustomerDashboardPage() {
             <Link href="/gear">Browse gear</Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
-            <Link href="/dashboard/orders">My orders</Link>
+            <Link href="/dashboard/my-orders">My orders</Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
             <Link href="/dashboard/profile">Profile settings</Link>
