@@ -57,3 +57,16 @@ export const changePasswordSchema = z
 
 export type UpdateProfileValues = z.infer<typeof updateProfileSchema>;
 export type ChangePasswordValues = z.infer<typeof changePasswordSchema>;
+
+
+
+export const reviewSchema = z.object({
+  rating: z.coerce
+    .number({ invalid_type_error: 'Please select a rating' })
+    .int()
+    .min(1, 'Please select a rating')
+    .max(5),
+  comment: z.string().trim().max(1000, 'Comment must be under 1000 characters').optional(),
+});
+
+export type ReviewFormValues = z.infer<typeof reviewSchema>;
