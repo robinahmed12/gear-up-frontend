@@ -13,7 +13,8 @@ interface DashboardLayoutProps {
 export default async function DashboardGroupLayout({
   children,
 }: DashboardLayoutProps) {
-  const user = (await getMe()) as User | null;
+   const result = await getMe();
+  const user = result.success ? result.data : null;
 
   // Defense in depth (middleware should also protect these routes)
   if (!user) {

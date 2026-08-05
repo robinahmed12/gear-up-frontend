@@ -1,40 +1,49 @@
 // components/shared/navbar.tsx
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRef, useState } from 'react';
-import { Menu, X, PackageSearch, LayoutDashboard, LogOut, ChevronDown } from 'lucide-react';
+import Link from "next/link";
+import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import {
+  Menu,
+  X,
+  PackageSearch,
+  LayoutDashboard,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import type { User } from '@/lib/types';
-import { logoutAction } from '@/service/logout';
+import { Button } from "@/components/ui/button";
+import type { User } from "@/lib/types";
+import { logoutAction } from "@/service/logout";
 
 interface NavbarProps {
   user?: User | null;
 }
 
-const DASHBOARD_PATH: Record<User['role'], string> = {
-  CUSTOMER: '/dashboard',
-  PROVIDER: '/provider-dashboard',
-  ADMIN: '/admin-dashboard',
+const DASHBOARD_PATH: Record<User["role"], string> = {
+  CUSTOMER: "/dashboard",
+  PROVIDER: "/provider-dashboard",
+  ADMIN: "/admin-dashboard",
 };
 
 const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/gear', label: 'Browse Gear' },
+  { href: "/", label: "Home" },
+  { href: "/gear", label: "Browse Gear" },
 ];
 
 function getInitials(name: string) {
-   if (!name) return '';
+  if (!name) return "";
   return name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
-    .join('');
+    .join("");
 }
 
 export function Navbar({ user }: NavbarProps) {
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -52,7 +61,14 @@ export function Navbar({ user }: NavbarProps) {
 
   const handleLogout = async () => {
     await logoutAction();
-    window.location.href = '/login';
+    window.location.href = "/login";
+  };
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname === href || pathname.startsWith(href + "/");
   };
 
   return (
@@ -60,7 +76,12 @@ export function Navbar({ user }: NavbarProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <nav className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
+          <Link
+            href="/"
+            className={`flex items-center gap-2 shrink-0 ${
+              isActive("/") ? "text-orange-500" : ""
+            }`}
+          >
             <PackageSearch className="h-6 w-6 text-primary" />
             <span className="text-xl font-bold text-foreground">GearUp</span>
           </Link>
@@ -71,7 +92,11 @@ export function Navbar({ user }: NavbarProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className={`text-sm font-medium transition-colors hover:text-foreground ${
+                  isActive(link.href)
+                    ? "bg-accent text-accent-foreground hover:bg-accent/90 rounded-md px-2 py-1"
+                    : "text-muted-foreground"
+                }`}
               >
                 {link.label}
               </Link>
@@ -96,10 +121,12 @@ export function Navbar({ user }: NavbarProps) {
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
                     {getInitials(user.name)}
                   </span>
-                  <span className="text-sm font-medium text-foreground">{user.name}</span>
+                  <span className="text-sm font-medium text-foreground">
+                    {user.name}
+                  </span>
                   <ChevronDown
                     className={`h-4 w-4 text-muted-foreground transition-transform ${
-                      isProfileOpen ? 'rotate-180' : ''
+                      isProfileOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
@@ -110,8 +137,12 @@ export function Navbar({ user }: NavbarProps) {
                     className="absolute right-0 top-full mt-1 w-56 rounded-md border border-border bg-card p-1 shadow-lg"
                   >
                     <div className="border-b border-border px-3 py-2">
-                      <p className="truncate text-sm font-medium text-foreground">{user.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {user.name}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
                     </div>
 
                     {dashboardPath && (
@@ -139,14 +170,18 @@ export function Navbar({ user }: NavbarProps) {
                 )}
               </div>
             ) : (
-              <>
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/login">Log in</Link>
-                </Button>
-                <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Link href="/register">Sign up</Link>
-                </Button>
-              </>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className={
+                  isActive("/login")
+                    ? "bg-accent text-accent-foreground hover:bg-accent/90"
+                    : ""
+                }
+              >
+                <Link href="/login">Log in</Link>
+              </Button>
             )}
           </div>
 
@@ -157,7 +192,11 @@ export function Navbar({ user }: NavbarProps) {
             onClick={() => setIsMobileMenuOpen((open) => !open)}
             aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </nav>
 
@@ -170,7 +209,11 @@ export function Navbar({ user }: NavbarProps) {
                   key={link.href}
                   href={link.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground"
+                  className={`text-sm font-medium hover:text-foreground ${
+                    isActive(link.href)
+                      ? "text-orange-500"
+                      : "text-muted-foreground"
+                  }`}
                 >
                   {link.label}
                 </Link>
@@ -183,8 +226,12 @@ export function Navbar({ user }: NavbarProps) {
                       {getInitials(user.name)}
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-foreground">{user.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {user.name}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
                     </div>
                   </div>
 
@@ -213,17 +260,16 @@ export function Navbar({ user }: NavbarProps) {
                 </div>
               ) : (
                 <div className="flex gap-3 border-t border-border pt-4">
-                  <Button asChild variant="ghost" className="flex-1">
-                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                      Log in
-                    </Link>
-                  </Button>
                   <Button
                     asChild
-                    className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
+                    variant="ghost"
+                    className={`flex-1 ${isActive("/login") ? "text-orange-500" : ""}`}
                   >
-                    <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                      Sign up
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Log in
                     </Link>
                   </Button>
                 </div>

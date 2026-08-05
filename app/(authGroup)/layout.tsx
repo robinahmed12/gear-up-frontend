@@ -1,13 +1,13 @@
 import { Navbar } from "@/components/shared/navbar";
-import { User } from "@/lib/types";
 import { getMe } from "@/service/getMe";
 
-export default async function AuthgroupLayout({
+export default async function AuthGroupLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user: User | null = await getMe();
+   const result = await getMe();
+  const user = result.success ? result.data : null;
   return <div>
     <Navbar user={user}/>
     {children}

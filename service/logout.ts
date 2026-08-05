@@ -12,6 +12,7 @@ import { redirect } from 'next/navigation';
  * receive FormData as their first param only if the function declares it.
  */
 export async function logoutAction() {
+
   const cookieStore = await cookies();
 
   cookieStore.delete('accessToken');

@@ -2,23 +2,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PackageSearch } from "lucide-react";
+import { Gear } from "@/lib/types";
 
-interface Gear {
-  id: string;
-  name: string;
-  image?: string;
-  pricePerDay: number;
-  category?: {
-    name: string;
-  };
-  availability?: boolean;
-}
+
 
 interface GearGridProps {
   gears: Gear[];
 }
 
 export default function GearGrid({ gears }: GearGridProps) {
+  console.log("GearGrid received:", gears.length);
   if (!gears.length) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">
@@ -35,56 +28,57 @@ export default function GearGrid({ gears }: GearGridProps) {
 
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-      {gears.map((gear) => (
-        <Link
-          key={gear.id}
-          href={`/gear/${gear.id}`}
-          className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+  {gears.map((gear) => (
+    <Link
+      key={gear.id}
+      href={`/gear/${gear.id}`}
+      className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+    >
+      <div className="relative h-52 w-full overflow-hidden bg-muted">
+        <Image
+          src={gear.images?.[0] ?? "/placeholder.png"}
+          alt={gear.title}
+          fill
+          sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <span
+          className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-xs font-medium ${
+            gear.isAvailable
+              ? "bg-primary text-primary-foreground"
+              : "bg-destructive text-destructive-foreground"
+          }`}
         >
-          <div className="relative h-52 w-full overflow-hidden bg-muted">
-            <Image
-              src={gear.image ?? "/placeholder.png"}
-              alt={"picture"}
-              fill
-              sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <span
-              className={`absolute right-3 top-3 rounded-full px-2.5 py-1 text-xs font-medium ${
-                gear.availability
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-destructive text-destructive-foreground"
-              }`}
-            >
-              {gear.availability ? "Available" : "Unavailable"}
+          {gear.isAvailable ? "Available" : "Unavailable"}
+        </span>
+      </div>
+
+      <div className="space-y-2 p-4">
+        {gear.category?.name && (
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {gear.category.name}
+          </p>
+        )}
+
+        <h3 className="line-clamp-1 text-base font-semibold text-foreground">
+          {gear.title}
+        </h3>
+
+        <div className="flex items-baseline justify-between pt-1">
+          <p className="text-lg font-bold text-foreground">
+            ৳{gear.pricePerDay}
+            <span className="text-sm font-normal text-muted-foreground">
+              /day
             </span>
-          </div>
+          </p>
+          <span className="text-sm font-medium text-accent transition-transform group-hover:translate-x-0.5">
+            View →
+          </span>
+        </div>
+      </div>
+    </Link>
+  ))}
+</div>
 
-          <div className="space-y-2 p-4">
-            {gear.category?.name && (
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {gear.category.name}
-              </p>
-            )}
-
-            <h3 className="line-clamp-1 text-base font-semibold text-foreground">
-              {gear.name}
-            </h3>
-
-            <div className="flex items-baseline justify-between pt-1">
-              <p className="text-lg font-bold text-foreground">
-                ৳{gear.pricePerDay}
-                <span className="text-sm font-normal text-muted-foreground">
-                  /day
-                </span>
-              </p>
-              <span className="text-sm font-medium text-accent transition-transform group-hover:translate-x-0.5">
-                View →
-              </span>
-            </div>
-          </div>
-        </Link>
-      ))}
-    </div>
   );
 }

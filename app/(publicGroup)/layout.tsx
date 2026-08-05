@@ -2,15 +2,15 @@
 
 import { Footer } from "@/components/shared/footer";
 import { Navbar } from "@/components/shared/navbar";
-import { User } from "@/lib/types";
 import { getMe } from "@/service/getMe";
 
-export default async function PublicgroupLayout({
+export default async function PublicGroupLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-   const user: User | null = await getMe();
+    const result = await getMe();
+  const user = result.success ? result.data : null;
   return <div>
     <Navbar user={user}/>
     {children}

@@ -10,6 +10,7 @@ import { getGear } from '../../_actions/getGearList';
 
 export async function FeaturedGear() {
   const gear = await getGear();
+    
 
   if (gear.length === 0) return null;
 
@@ -34,7 +35,7 @@ export async function FeaturedGear() {
         </div>
 
         <div className="mt-10">
-          <GearGrid gears={gear} />
+          <GearGrid gears={gear.data} />
         </div>
 
         <div className="mt-8 text-center sm:hidden">

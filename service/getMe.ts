@@ -38,7 +38,7 @@ export async function getMe() {
       };
     }
 
-    return result.data.user;
+    return result;
   } catch (error) {
     
     return {
