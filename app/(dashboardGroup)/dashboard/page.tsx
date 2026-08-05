@@ -6,6 +6,7 @@ import { getMyPayments } from '@/service/getMyPayments';
 import { StatCard } from '../_components/admin/StatCard';
 import { OrderStatusBadge } from '@/components/shared/order-status-badge';
 import { Button } from '@/components/ui/button';
+import { Payment, RentalOrder } from '@/lib/types';
 
 export default async function CustomerDashboardPage() {
   const [rentalsResult, paymentsResult] = await Promise.all([
@@ -16,15 +17,15 @@ export default async function CustomerDashboardPage() {
   const rentals = rentalsResult.success ? rentalsResult.data : [];
   const payments = paymentsResult.success ? paymentsResult.data : [];
 
-  const activeRentals = rentals.filter((r) =>
+  const activeRentals = rentals.filter((r: RentalOrder) =>
     ['CONFIRMED', 'PAID', 'PICKED_UP'].includes(r.status),
   );
-  const awaitingPayment = rentals.filter((r) => r.status === 'CONFIRMED');
-  const readyToReview = rentals.filter((r) => r.status === 'RETURNED');
+  const awaitingPayment = rentals.filter((r :RentalOrder) => r.status === 'CONFIRMED');
+  const readyToReview = rentals.filter((r : RentalOrder) => r.status === 'RETURNED');
 
   const totalSpent = payments
-    .filter((p) => p.status === 'COMPLETED')
-    .reduce((sum, p) => sum + Number(p.amount), 0);
+    .filter((p: Payment) => p.status === 'COMPLETED')
+    .reduce((sum: number, p: Payment) => sum + Number(p.amount), 0);
 
   const recentRentals = [...rentals]
     .sort((a, b) => (a.status === 'CONFIRMED' ? -1 : b.status === 'CONFIRMED' ? 1 : 0))

@@ -56,7 +56,7 @@ export default function OrderHistoryTable({
         </thead>
 
         <tbody>
-          {rentals.map((rental: any) => (
+          {rentals.map((rental: RentalOrder) => (
             <tr key={rental.id} className="border-b">
               <td>
                 {rental.gear?.images?.[0] && (

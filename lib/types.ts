@@ -64,6 +64,7 @@ export interface RentalOrder {
   totalAmount: number;
   status: RentalStatus;
   provider: provider
+  gear: Gear
 }
 export type NextStatus = Extract<RentalStatus, 'CONFIRMED' | 'PICKED_UP' | 'RETURNED'>;
 
