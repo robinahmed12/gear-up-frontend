@@ -24,7 +24,7 @@ export async function getMyRentals() {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      cache: "force-cache",
+       cache: "no-store",
       next: {
         tags: ["my-rentals"],
       },

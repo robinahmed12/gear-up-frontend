@@ -23,7 +23,7 @@ export async function getGearReviews(id: string) {
       `${BACKEND_API_URL}/api/gear/${id}/reviews`,
       {
         method: "GET",
-        cache: "force-cache",
+        cache: "no-store",
         next: {
           tags: [`gear-reviews-${id}`],
         },

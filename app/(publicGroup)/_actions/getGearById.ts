@@ -23,7 +23,7 @@ export async function getGearById(id: string) {
       `${BACKEND_API_URL}/api/gear/${id}`,
       {
         method: "GET",
-        cache: "force-cache",
+        cache: "no-store",
         next: {
           tags: [`gear-detail-${id}`],
         },

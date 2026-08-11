@@ -25,6 +25,7 @@ export async function updateOrderStatusAction(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
+        cache: "no-store",
       },
       body: JSON.stringify({ status }),
     });

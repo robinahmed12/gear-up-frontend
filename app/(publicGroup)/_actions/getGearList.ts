@@ -58,7 +58,7 @@ export async function getGear(params?: GetGearParams) {
 
     const response = await fetch(url, {
       method: "GET",
-      cache: "force-cache",
+      cache: "no-store",
       next: {
         tags: ["gear-list"],
       },
