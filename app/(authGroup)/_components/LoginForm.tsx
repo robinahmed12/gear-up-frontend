@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { loginAction } from '../_actions/authActions';
+import { toast } from 'sonner';
 
 const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email('Enter a valid email address'),
@@ -49,6 +50,10 @@ export function LoginForm() {
 
     startTransition(async () => {
       const result = await loginAction(values);
+
+      if (result.success) {
+        toast.success(`Login  successfully as ${result.data.user.role} `)
+      }
 
       if (!result.success) {
         setServerError(result.message);

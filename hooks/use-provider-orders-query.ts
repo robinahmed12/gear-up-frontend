@@ -76,12 +76,12 @@ export function useUpdateOrderStatus() {
       router.refresh();
     },
 
-    onSettled: () => {
-      // Don't depend on this for fetching because your actual
-      // queryFn currently uses initialOrders.
-      queryClient.invalidateQueries({
-        queryKey: PROVIDER_ORDERS_KEY,
-      });
-    },
+    // onSettled: () => {
+    //   // Don't depend on this for fetching because your actual
+    //   // queryFn currently uses initialOrders.
+    //   queryClient.invalidateQueries({
+    //     queryKey: PROVIDER_ORDERS_KEY,
+    //   });
+    // },
   });
 }

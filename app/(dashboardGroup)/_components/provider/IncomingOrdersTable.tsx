@@ -50,13 +50,21 @@ export function IncomingOrdersTable({
    * initialOrders comes from the Server Component.
    * The mutation hook updates this cache optimistically.
    */
-  const { data: orders = [] } = useQuery<RentalOrder[]>({
+  const { data: orders = initialOrders } = useQuery<RentalOrder[]>({
     queryKey: ["provider-orders"],
-    queryFn: async () => initialOrders,
-    initialData: initialOrders,
-    staleTime: Infinity,
-  });
 
+    // Required by TanStack Query.
+    // We don't want this query to automatically refetch.
+    queryFn: async () => initialOrders,
+
+    initialData: initialOrders,
+
+    // Don't automatically refetch the server-rendered data.
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
+  });
   const updateStatus = useUpdateOrderStatus();
 
   if (orders.length === 0) {

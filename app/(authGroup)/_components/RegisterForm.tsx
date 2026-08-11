@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { registerAction } from '../_actions/authActions';
+import { toast } from 'sonner';
 
 const registerSchema = z
   .object({
@@ -94,7 +95,9 @@ export function RegisterForm() {
         phone: values.phone,
       });
 
-      console.log(result, "r")
+       if (result.success) {
+        toast.success(`Account created as ${result.data.user.role} Successfully`)
+      }
 
       if (!result.success) {
         setServerError(result.message);
