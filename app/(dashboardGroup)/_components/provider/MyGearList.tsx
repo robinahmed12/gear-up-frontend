@@ -1,13 +1,17 @@
 // Client Component — TanStack Query (hooks/use-provider-gear-query.ts), edit/delete/availability-toggle actions per row
 // app/(dashboardGroup)/_components/provider/MyGearList.tsx
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { Pencil, Trash2, PackagePlus, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useDeleteGear, useToggleGearAvailability } from '@/hooks/use-provider-gear-query';
-import type { Gear } from '@/lib/types';
+import Image from "next/image";
+import Link from "next/link";
+import { Pencil, Trash2, PackagePlus, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  useDeleteGear,
+  useToggleGearAvailability,
+} from "@/hooks/use-provider-gear-query";
+import type { Gear } from "@/lib/types";
+import { toast } from "sonner";
 
 interface MyGearListProps {
   gear: Gear[];
@@ -21,21 +25,33 @@ export function MyGearList({ gear }: MyGearListProps) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">
         <PackagePlus className="h-8 w-8 text-muted-foreground" />
-        <p className="mt-3 text-sm font-medium text-foreground">No gear listed yet</p>
+        <p className="mt-3 text-sm font-medium text-foreground">
+          No gear listed yet
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">
           Add your first item to start earning from it.
         </p>
-        <Button asChild className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+        <Button
+          asChild
+          className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90"
+        >
           <Link href="/provider-dashboard/gear/new">Add gear</Link>
         </Button>
       </div>
     );
   }
-
   function handleDelete(id: string, title: string) {
-    if (confirm(`Delete "${title}"? This can't be undone.`)) {
-      deleteGear.mutate(id);
-    }
+    toast.warning(`Delete "${title}"?`, {
+      description: "This action cannot be undone.",
+      action: {
+        label: "Delete",
+        onClick: () => deleteGear.mutate(id),
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => {},
+      },
+    });
   }
 
   return (
@@ -44,11 +60,21 @@ export function MyGearList({ gear }: MyGearListProps) {
       <table className="hidden w-full text-left text-sm sm:table">
         <thead className="border-b border-border bg-muted/40">
           <tr>
-            <th className="px-4 py-3 font-medium text-muted-foreground">Gear</th>
-            <th className="px-4 py-3 font-medium text-muted-foreground">Price/day</th>
-            <th className="px-4 py-3 font-medium text-muted-foreground">Stock</th>
-            <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
-            <th className="px-4 py-3 font-medium text-muted-foreground text-right">Actions</th>
+            <th className="px-4 py-3 font-medium text-muted-foreground">
+              Gear
+            </th>
+            <th className="px-4 py-3 font-medium text-muted-foreground">
+              Price/day
+            </th>
+            <th className="px-4 py-3 font-medium text-muted-foreground">
+              Stock
+            </th>
+            <th className="px-4 py-3 font-medium text-muted-foreground">
+              Status
+            </th>
+            <th className="px-4 py-3 font-medium text-muted-foreground text-right">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
@@ -58,39 +84,51 @@ export function MyGearList({ gear }: MyGearListProps) {
                 <div className="flex items-center gap-3">
                   <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-md bg-muted">
                     <Image
-                      src={item.images?.[0] ?? '/placeholder.png'}
+                      src={item.images?.[0] ?? "/placeholder.png"}
                       alt={item.title}
                       fill
                       className="object-cover"
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-foreground">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">{item.category?.name}</p>
+                    <p className="truncate font-medium text-foreground">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {item.category?.name}
+                    </p>
                   </div>
                 </div>
               </td>
-              <td className="px-4 py-3 font-medium text-foreground">৳{item.pricePerDay}</td>
+              <td className="px-4 py-3 font-medium text-foreground">
+                ৳{item.pricePerDay}
+              </td>
               <td className="px-4 py-3 text-foreground">{item.stock}</td>
               <td className="px-4 py-3">
                 <button
                   onClick={() =>
-                    toggleAvailability.mutate({ gearId: item.id, isAvailable: !item.isAvailable })
+                    toggleAvailability.mutate({
+                      gearId: item.id,
+                      isAvailable: !item.isAvailable,
+                    })
                   }
                   disabled={toggleAvailability.isPending}
                   className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                     item.isAvailable
-                      ? 'bg-primary/15 text-primary hover:bg-primary/25'
-                      : 'bg-destructive/15 text-destructive hover:bg-destructive/25'
+                      ? "bg-primary/15 text-primary hover:bg-primary/25"
+                      : "bg-destructive/15 text-destructive hover:bg-destructive/25"
                   }`}
                 >
-                  {item.isAvailable ? 'Available' : 'Unavailable'}
+                  {item.isAvailable ? "Available" : "Unavailable"}
                 </button>
               </td>
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-1">
                   <Button asChild variant="ghost" size="icon">
-                    <Link href={`/provider-dashboard/gear/${item.id}/edit`} aria-label="Edit">
+                    <Link
+                      href={`/provider-dashboard/gear/${item.id}/edit`}
+                      aria-label="Edit"
+                    >
                       <Pencil className="h-4 w-4" />
                     </Link>
                   </Button>
@@ -122,14 +160,16 @@ export function MyGearList({ gear }: MyGearListProps) {
             <div className="flex items-center gap-3">
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
                 <Image
-                  src={item.images?.[0] ?? '/placeholder.png'}
+                  src={item.images?.[0] ?? "/placeholder.png"}
                   alt={item.title}
                   fill
                   className="object-cover"
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium text-foreground">{item.title}</p>
+                <p className="truncate font-medium text-foreground">
+                  {item.title}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   ৳{item.pricePerDay}/day · Stock {item.stock}
                 </p>
@@ -139,16 +179,19 @@ export function MyGearList({ gear }: MyGearListProps) {
             <div className="flex items-center justify-between">
               <button
                 onClick={() =>
-                  toggleAvailability.mutate({ gearId: item.id, isAvailable: !item.isAvailable })
+                  toggleAvailability.mutate({
+                    gearId: item.id,
+                    isAvailable: !item.isAvailable,
+                  })
                 }
                 disabled={toggleAvailability.isPending}
                 className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                   item.isAvailable
-                    ? 'bg-primary/15 text-primary'
-                    : 'bg-destructive/15 text-destructive'
+                    ? "bg-primary/15 text-primary"
+                    : "bg-destructive/15 text-destructive"
                 }`}
               >
-                {item.isAvailable ? 'Available' : 'Unavailable'}
+                {item.isAvailable ? "Available" : "Unavailable"}
               </button>
 
               <div className="flex items-center gap-1">
