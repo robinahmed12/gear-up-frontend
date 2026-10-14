@@ -1,23 +1,5 @@
-// Payment history table w/ status + method + paidAt columns
-"use client";
-
-interface Payment {
-  id: string;
-
-  amount: number;
-
-  status: string;
-
-  method: string;
-
-  paidAt?: string;
-
-  rental?: {
-    gear?: {
-      name: string;
-    };
-  };
-}
+import { formatMoney } from '@/lib/format';
+import { Payment } from '@/lib/types';
 
 interface PaymentHistoryTableProps {
   payments: Payment[];
@@ -34,6 +16,14 @@ export default function PaymentHistoryTable({
     );
   }
 
+  const statusClass: Record<string, string> = {
+    PENDING: 'bg-yellow-100 text-yellow-700',
+    COMPLETED: 'bg-green-100 text-green-700',
+    PARTIALLY_REFUNDED: 'bg-orange-100 text-orange-700',
+    REFUNDED: 'bg-gray-100 text-gray-700',
+    FAILED: 'bg-red-100 text-red-700',
+  };
+
   return (
     <div className="overflow-x-auto rounded-lg border">
       <table className="w-full text-sm">
@@ -42,6 +32,8 @@ export default function PaymentHistoryTable({
             <th className="p-4 text-left">Gear</th>
 
             <th className="p-4 text-left">Amount</th>
+
+            <th className="p-4 text-left">Currency</th>
 
             <th className="p-4 text-left">Status</th>
 
@@ -55,23 +47,22 @@ export default function PaymentHistoryTable({
           {payments.map((payment) => (
             <tr key={payment.id} className="border-b">
               <td className="p-4">
-                {payment.rental?.gear?.name ?? "Gear Rental"}
+                {(payment as any).rental?.gear?.title ??
+                  (payment as any).rental?.gear?.name ??
+                  'Gear Rental'}
               </td>
 
-              <td className="p-4 font-medium">৳{payment.amount}</td>
+              <td className="p-4 font-medium">
+                {formatMoney(payment.amount, payment.currency ?? 'USD')}
+              </td>
+
+              <td className="p-4">{payment.currency ?? 'USD'}</td>
 
               <td className="p-4">
                 <span
-                  className={`
-                      rounded-full px-3 py-1 text-xs font-medium
-                      ${
-                        payment.status === "PAID"
-                          ? "bg-green-100 text-green-700"
-                          : payment.status === "PENDING"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
-                      }
-                    `}
+                  className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    statusClass[payment.status] ?? 'bg-gray-100 text-gray-700'
+                  }`}
                 >
                   {payment.status}
                 </span>
@@ -82,7 +73,7 @@ export default function PaymentHistoryTable({
               <td className="p-4 text-muted-foreground">
                 {payment.paidAt
                   ? new Date(payment.paidAt).toLocaleDateString()
-                  : "Not paid yet"}
+                  : 'Not paid yet'}
               </td>
             </tr>
           ))}

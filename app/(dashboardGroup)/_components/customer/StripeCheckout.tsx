@@ -11,6 +11,7 @@ interface Props {
   clientSecret: string;
   amount: number;
   breakdown?: RentalBreakdown;
+  deposit?: { amount: number; clientSecret: string; status: string };
 }
 
 export default function StripeCheckout({
@@ -18,6 +19,7 @@ export default function StripeCheckout({
   clientSecret,
   amount,
   breakdown,
+  deposit,
 }: Props) {
   const currency = breakdown?.currency ?? "USD";
 
@@ -72,9 +74,10 @@ export default function StripeCheckout({
             },
           }}
         >
-          <CheckoutForm orderId={orderId} amount={amount} currency={currency} />
+          <CheckoutForm orderId={orderId} amount={amount} currency={currency} clientSecret={clientSecret} deposit={deposit} />
         </Elements>
       </div>
     </div>
   );
 }
+

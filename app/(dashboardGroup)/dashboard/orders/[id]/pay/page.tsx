@@ -25,6 +25,16 @@ export default async function PayPage({ params }: PayPageProps) {
       clientSecret={paymentResult.data.clientSecret}
       amount={paymentResult.data.amount}
       breakdown={breakdownResult.success ? breakdownResult.data : undefined}
+      deposit={
+        paymentResult.data.deposit &&
+        paymentResult.data.deposit.clientSecret
+          ? {
+              amount: paymentResult.data.deposit.amount,
+              clientSecret: paymentResult.data.deposit.clientSecret,
+              status: paymentResult.data.deposit.status,
+            }
+          : undefined
+      }
     />
   );
 }

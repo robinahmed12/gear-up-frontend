@@ -12,6 +12,11 @@ interface CreatePaymentResult {
     clientSecret: string;
     amount: number;
     gearTitle: string;
+    deposit?: {
+      amount: number;
+      clientSecret: string | null;
+      status: string;
+    };
   };
 }
 
@@ -62,6 +67,13 @@ export async function createPaymentAction(
         // once, here, so every consumer downstream gets a real number.
         amount: Number(result.data.payment.amount),
         gearTitle: result.data.payment.rentalOrder.gear.title,
+        deposit: result.data.deposit?.clientSecret
+          ? {
+              amount: Number(result.data.deposit.amount),
+              clientSecret: result.data.deposit.clientSecret,
+              status: result.data.deposit.status,
+            }
+          : undefined,
       },
     };
   } catch {
