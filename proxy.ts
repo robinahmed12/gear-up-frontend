@@ -7,6 +7,11 @@ import { jwtUtils } from './utils/jwt';
 const AUTH_ROUTES = ['/login', '/register'];
 const PUBLIC_ROUTES = ['/', '/gear'];
 
+// The backend signs access tokens with this single secret. The refresh token is
+// an opaque, server-validated token (not a JWT), so it is verified by the
+// backend on exchange, not here.
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
 export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
@@ -16,31 +21,35 @@ export async function proxy(request: NextRequest) {
   const refreshToken = request.cookies.get('refreshToken')?.value;
 
   let decodedAccessToken = accessToken
-    ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)
-    : null;
-  
-
-  const decodedRefreshToken = refreshToken
-    ? jwtUtils.verifyToken(refreshToken, process.env.JWT_REFRESH_SECRET as string)
+    ? jwtUtils.verifyToken(accessToken, JWT_SECRET)
     : null;
 
   const response = NextResponse.next();
 
-  if (!decodedAccessToken?.success && decodedRefreshToken?.success) {
-    // Access token expired but refresh token is still valid — get a new one.
-    const result = await getNewAccessToken(refreshToken as string);
+  if (!decodedAccessToken?.success && refreshToken) {
+    // Access token expired/missing but a refresh token exists — exchange it for
+    // a new pair. The refresh token is opaque, so the backend validates it.
+    const result = await getNewAccessToken(refreshToken);
 
     if (result.success) {
-      const newAccessToken = result.data.accessToken;
-
-      response.cookies.set('accessToken', newAccessToken, {
+      response.cookies.set('accessToken', result.data.accessToken, {
         httpOnly: true,
         maxAge: 60 * 60 * 24,
         sameSite: 'lax',
       });
+      response.cookies.set('refreshToken', result.data.refreshToken, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: 'lax',
+      });
 
-      accessToken = newAccessToken;
-      decodedAccessToken = jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string);
+      accessToken = result.data.accessToken;
+      decodedAccessToken = jwtUtils.verifyToken(accessToken, JWT_SECRET);
+    } else {
+      // Refresh failed — clear the stale pair so the user is properly logged out.
+      response.cookies.set('accessToken', '', { maxAge: 0 });
+      response.cookies.set('refreshToken', '', { maxAge: 0 });
+      accessToken = undefined;
     }
   }
 

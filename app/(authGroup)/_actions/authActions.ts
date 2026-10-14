@@ -11,7 +11,7 @@ interface RegisterInput {
 }
 
 type RegisterResult =
-  | { success: true; data: { user: User; token: string } }
+  | { success: true; data: { user: User; token: string; refreshToken: string } }
   | { success: false; message: string };
 
 export async function registerAction(
@@ -45,6 +45,12 @@ export async function registerAction(
       maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
+    cookieStore.set("refreshToken", result.data.refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
+      path: "/",
+    });
 
     return { success: true, data: result.data };
   } catch {
@@ -62,7 +68,7 @@ interface LoginInput {
 }
 
 type LoginResult =
-  | { success: true; data: { user: User; token: string } }
+  | { success: true; data: { user: User; token: string; refreshToken: string } }
   | { success: false; message: string };
 
 export async function loginAction(input: LoginInput): Promise<LoginResult> {
@@ -89,6 +95,12 @@ export async function loginAction(input: LoginInput): Promise<LoginResult> {
       httpOnly: true,
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+    cookieStore.set("refreshToken", result.data.refreshToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 30,
       path: "/",
     });
 

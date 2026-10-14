@@ -41,7 +41,7 @@ export default async function PublicGroupGearByIdPage({ params }: GearDetailsPag
             Gear
           </Link>
           <ChevronRight className="h-3.5 w-3.5" />
-          <span className="truncate text-foreground">{gear.name}</span>
+          <span className="truncate text-foreground">{gear.title}</span>
         </div>
       </div>
 
@@ -49,9 +49,9 @@ export default async function PublicGroupGearByIdPage({ params }: GearDetailsPag
         <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           {/* Gallery */}
           <GearGallery
-            mainImage={gear.image ?? '/placeholder.png'}
+            mainImage={gear.images?.[0] ?? '/placeholder.png'}
             images={gear.images ?? []}
-            name={gear.name}
+            name={gear.title}
           />
 
           {/* Info + rent form */}
@@ -63,7 +63,7 @@ export default async function PublicGroupGearByIdPage({ params }: GearDetailsPag
                 </p>
               )}
               <h1 className="mt-1.5 text-3xl font-bold tracking-tight text-foreground">
-                {gear.name}
+                {gear.title}
               </h1>
 
               {typeof gear.averageRating === 'number' && gear.reviewCount > 0 && (
@@ -92,7 +92,7 @@ export default async function PublicGroupGearByIdPage({ params }: GearDetailsPag
                     : 'bg-destructive text-destructive-foreground'
                 }`}
               >
-                {gear.availability ? 'Available' : 'Currently unavailable'}
+                {gear.isAvailable ? 'Available' : 'Currently unavailable'}
               </span>
             </div>
 
@@ -113,7 +113,7 @@ export default async function PublicGroupGearByIdPage({ params }: GearDetailsPag
                     {gear.provider.name}
                     <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                   </p>
-                  <p className="truncate text-xs text-muted-foreground">{gear.provider.email}</p>
+                  <p className="truncate text-xs text-muted-foreground">{gear.provider.name}</p>
                 </div>
               </div>
             )}
