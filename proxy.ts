@@ -4,7 +4,7 @@ import { getNewAccessToken } from './service/refreshToken';
 import { jwtUtils } from './utils/jwt';
 
 const AUTH_ROUTES = ['/login', '/register'];
-const PUBLIC_ROUTES = ['/', '/gear'];
+const PUBLIC_ROUTES = ['/', '/gear', '/forgot-password', '/reset-password'];
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -55,7 +55,9 @@ export async function proxy(request: NextRequest) {
       pathname === '/verify-email' ||
       pathname === '/' ||
       pathname === '/gear' ||
-      pathname.startsWith('/gear/');
+      pathname.startsWith('/gear/') ||
+      pathname === '/forgot-password' ||
+      pathname === '/reset-password';
     if (!allowedWhilePending) {
       return NextResponse.redirect(new URL('/verify-email?pending=1', request.url));
     }
