@@ -124,6 +124,17 @@ export interface OrderLineItem {
   createdAt: string;
 }
 
+export interface RentalBreakdown {
+  id: string;
+  subtotal: number;
+  serviceFee: number;
+  depositAmount: number;
+  taxAmount: number;
+  totalAmount: number;
+  currency: string;
+  lineItems: OrderLineItem[];
+}
+
 export type DepositStatus = 'PENDING' | 'AUTHORIZED' | 'RELEASED' | 'CAPTURED' | 'FAILED';
 
 export interface Deposit {

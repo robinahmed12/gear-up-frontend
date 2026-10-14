@@ -6,14 +6,16 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { Loader2, Lock } from 'lucide-react';
+import { formatMoney } from '@/lib/format';
 import { Button } from '@/components/ui/button';
 
 interface CheckoutFormProps {
   orderId: string;
   amount: number;
+  currency: string;
 }
 
-export function CheckoutForm({ orderId, amount }: CheckoutFormProps) {
+export function CheckoutForm({ orderId, amount, currency }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -68,14 +70,14 @@ export function CheckoutForm({ orderId, amount }: CheckoutFormProps) {
         className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
         size="lg"
       >
-        {isProcessing ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          `Pay ৳${amount.toLocaleString()}`
-        )}
+          {isProcessing ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            `Pay ${formatMoney(amount, currency)}`
+          )}
       </Button>
 
       <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">

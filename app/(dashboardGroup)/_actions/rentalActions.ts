@@ -4,6 +4,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import type { RentalBreakdown } from "@/lib/types";
 
 const BACKEND_API_URL = process.env.BACKEND_API_URL || "http://localhost:5000";
 
@@ -102,6 +103,40 @@ export async function cancelRentalAction(id: string) {
       data: data.data ?? data,
       message: "Rental cancelled successfully",
     };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Something went wrong",
+    };
+  }
+}
+
+// Pricing breakdown + line items for an order (owner customer, owning
+// provider, or admin — enforced by the backend).
+export async function getRentalBreakdownAction(
+  rentalOrderId: string,
+): Promise<{ success: boolean; message: string; data?: RentalBreakdown }> {
+  try {
+    const accessToken = await getAccessToken();
+
+    const response = await fetch(
+      `${BACKEND_API_URL}/api/rentals/${rentalOrderId}/breakdown`,
+      {
+        method: "GET",
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      return {
+        success: false,
+        message: data.message ?? "Failed to load breakdown",
+      };
+    }
+
+    return { success: true, message: data.message, data: data.data };
   } catch (error) {
     return {
       success: false,
