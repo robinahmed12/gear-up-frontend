@@ -20,6 +20,10 @@ export default async function PaymentSuccessPage({ searchParams }: PaymentSucces
         <p className="mt-2 text-sm text-muted-foreground">
           Your rental is confirmed. The provider has been notified to prepare your gear.
         </p>
+        <p className="mt-4 rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+          A receipt has been sent to your email address in case you need it for
+          your records.
+        </p>
         {orderId && (
           <p className="mt-1 text-xs text-muted-foreground">Order #{orderId.slice(0, 8)}</p>
         )}
