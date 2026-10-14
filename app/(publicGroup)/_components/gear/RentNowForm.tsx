@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { createRentalAction } from '@/app/(dashboardGroup)/_actions/rentalActions';
+import { resendVerificationAction } from '@/app/(authGroup)/_actions/authActions';
 
 interface RentNowFormProps {
   gearId: string;
@@ -36,6 +37,8 @@ export default function RentNowForm({
 }: RentNowFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [verificationError, setVerificationError] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const form = useForm<RentFormValues>({
     resolver: zodResolver(rentNowSchema),
@@ -69,11 +72,15 @@ export default function RentNowForm({
       );
 
       if (result?.unauthorized) {
-        router.push(`/auth/login?redirect=/gear/${gearId}`);
+        router.push(`/login?redirect=/gear/${gearId}`);
         return;
       }
 
       if (!result.success) {
+        if (/verify your email/i.test(result.message ?? '')) {
+          setVerificationError(true);
+          return;
+        }
         toast.error(result.message ?? 'Rental failed');
         return;
       }
@@ -102,6 +109,36 @@ export default function RentNowForm({
 
   return (
     <div className="rounded-xl border border-border bg-card p-5">
+      {verificationError && (
+        <div className="mb-5 space-y-3 rounded-md border border-destructive/20 bg-destructive/10 p-4">
+          <p className="text-sm font-medium text-destructive">Email not verified</p>
+          <p className="text-sm text-destructive/90">
+            Please verify your email address before continuing.
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={resending}
+            onClick={() => {
+              setResending(true);
+              resendVerificationAction()
+                .then((r) => {
+                  if (r.success) {
+                    toast.success(r.message);
+                    setVerificationError(false);
+                  } else {
+                    toast.error(r.message);
+                  }
+                })
+                .finally(() => setResending(false));
+            }}
+          >
+            {resending ? 'Sending...' : 'Resend verification email'}
+          </Button>
+        </div>
+      )}
+
       <h2 className="text-lg font-semibold text-foreground">Rent this gear</h2>
       <p className="mt-1 text-2xl font-bold text-foreground">
         ৳{pricePerDay}

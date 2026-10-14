@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { registerAction } from '../_actions/authActions';
+import { VerifyEmailPanel } from '../_components/VerifyEmailPanel';
 import { toast } from 'sonner';
 
 const registerSchema = z
@@ -64,11 +64,11 @@ const sidePanelFeatures = [
 ];
 
 export function RegisterForm() {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
 
   const {
     register,
@@ -80,6 +80,16 @@ export function RegisterForm() {
     resolver: zodResolver(registerSchema),
     defaultValues: { role: 'CUSTOMER' },
   });
+
+  if (verifiedEmail) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="w-full max-w-md">
+          <VerifyEmailPanel email={verifiedEmail} />
+        </div>
+      </div>
+    );
+  }
 
   const selectedRole = watch('role');
 
@@ -95,24 +105,14 @@ export function RegisterForm() {
         phone: values.phone,
       });
 
-       if (result.success) {
-        toast.success(`Account created as ${result.data.user.role} Successfully`)
-      }
-
       if (!result.success) {
         setServerError(result.message);
         return;
       }
 
-      const destination =
-        result.data.user.role === 'PROVIDER'
-          ? '/provider-dashboard'
-          : result.data.user.role === 'ADMIN'
-            ? '/admin-dashboard'
-            : '/dashboard';
-
-      router.push(destination);
-      router.refresh();
+      toast.success(`Account created as ${result.data.user.role} Successfully`);
+      // New accounts must verify their email before they can book.
+      setVerifiedEmail(result.data.user.email);
     });
   };
 
