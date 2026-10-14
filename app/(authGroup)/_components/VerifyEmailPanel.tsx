@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Loader2, Mail, ShieldCheck } from 'lucide-react';
+import { Loader2, LogOut, Mail, ShieldCheck } from 'lucide-react';
 
 import { resendVerificationAction } from '../_actions/authActions';
+import { logoutAction } from '@/service/logout';
 import { Button } from '@/components/ui/button';
 
-export function VerifyEmailPanel({ email }: { email?: string }) {
+export function VerifyEmailPanel({ email, pending = false }: { email?: string; pending?: boolean }) {
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
 
@@ -24,12 +25,22 @@ export function VerifyEmailPanel({ email }: { email?: string }) {
       </span>
 
       <h2 className="mt-5 text-2xl font-bold tracking-tight text-foreground">
-        Check your email
+        {pending ? 'Verify your account to continue' : 'Check your email'}
       </h2>
       <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
-        We sent a verification link to{' '}
-        <span className="font-medium text-foreground">{email ?? 'your email address'}</span>.
-        Verify your account to start renting gear.
+        {pending ? (
+          <>
+            We sent a verification link to{' '}
+            <span className="font-medium text-foreground">{email ?? 'your email address'}</span>.
+            Verify your account before accessing this area.
+          </>
+        ) : (
+          <>
+            We sent a verification link to{' '}
+            <span className="font-medium text-foreground">{email ?? 'your email address'}</span>.
+            Verify your account to start renting gear.
+          </>
+        )}
       </p>
 
       <Button
@@ -53,6 +64,15 @@ export function VerifyEmailPanel({ email }: { email?: string }) {
       </Button>
 
       {message && <p className="mt-3 text-sm text-muted-foreground">{message}</p>}
+
+      {pending && (
+        <form action={logoutAction} className="mt-6">
+          <Button type="submit" variant="ghost" className="gap-2">
+            <LogOut className="h-4 w-4" />
+            Log out
+          </Button>
+        </form>
+      )}
     </div>
   );
 }

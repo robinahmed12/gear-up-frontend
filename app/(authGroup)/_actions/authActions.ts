@@ -51,6 +51,17 @@ export async function registerAction(
       maxAge: 60 * 60 * 24 * 30,
       path: "/",
     });
+    // Newly registered accounts are not verified yet, so keep them gated.
+    cookieStore.set("emailPendingVerification", "1", {
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+    cookieStore.set("pendingVerificationEmail", result.data.user.email, {
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
 
     return { success: true, data: result.data };
   } catch {
@@ -104,6 +115,23 @@ export async function loginAction(input: LoginInput): Promise<LoginResult> {
       path: "/",
     });
 
+    // Gate unverified accounts away from protected routes.
+    if (result.data.user.emailVerifiedAt) {
+      cookieStore.delete("emailPendingVerification");
+      cookieStore.delete("pendingVerificationEmail");
+    } else {
+      cookieStore.set("emailPendingVerification", "1", {
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+      cookieStore.set("pendingVerificationEmail", result.data.user.email, {
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      });
+    }
+
     return { success: true, data: result.data };
   } catch {
     return {
@@ -135,6 +163,10 @@ export async function verifyEmailAction(
         message: result.message ?? "Verification failed",
       };
     }
+
+    const cookieStore = await cookies();
+    cookieStore.delete("emailPendingVerification");
+    cookieStore.delete("pendingVerificationEmail");
 
     return {
       success: true,
