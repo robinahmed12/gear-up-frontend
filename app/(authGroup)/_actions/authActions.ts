@@ -168,12 +168,23 @@ export async function resendVerificationAction(): Promise<{
       },
     );
 
-    const result = await res.json();
+    const contentType = (res.headers.get("content-type") ?? "").toLowerCase();
+    let result: { success?: boolean; message?: string } = {};
+    try {
+      if (contentType.includes("application/json")) {
+        result = await res.json();
+      } else {
+        result = { success: res.ok, message: await res.text() };
+      }
+    } catch (e) {
+      result = { success: false, message: (e as Error).message };
+    }
 
     if (!res.ok || !result.success) {
       return {
         success: false,
-        message: result.message ?? "Could not resend verification email",
+        message:
+          result.message?.trim() || "Could not resend verification email",
       };
     }
 
