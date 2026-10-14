@@ -22,6 +22,7 @@ export async function createRentalAction(
   quantity: number,
   startDate: string,
   endDate: string,
+  idempotencyKey?: string,
 ) {
   try {
     const accessToken = await getAccessToken();
@@ -34,11 +35,14 @@ export async function createRentalAction(
       };
     }
 
+    const key = idempotencyKey ?? crypto.randomUUID();
+
     const response = await fetch(`${BACKEND_API_URL}/api/rentals`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
+        "Idempotency-Key": key,
       },
       body: JSON.stringify({
         gearId,
@@ -48,6 +52,8 @@ export async function createRentalAction(
       }),
     });
     const data = await response.json();
+
+    const replayed = response.headers.get("Idempotency-Replayed") === "true";
 
     if (!response.ok) {
       return {
@@ -61,7 +67,10 @@ export async function createRentalAction(
     return {
       success: true,
       data: data.data ?? data,
-      message: "Rental created successfully",
+      replayed,
+      message: replayed
+        ? "This request was already processed."
+        : "Rental created successfully",
     };
   } catch (error) {
     return {
