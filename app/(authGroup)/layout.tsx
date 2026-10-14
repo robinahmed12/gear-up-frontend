@@ -6,10 +6,11 @@ export default async function AuthGroupLayout({
 }: {
   children: React.ReactNode;
 }) {
-   const result = await getMe();
-  const user = result.success ? result.data.user : null;
-  return <div>
-    <Navbar user={user}/>
+   // Auth-group pages (login/register/verify) intentionally render without a
+   // signed-in navbar identity so a freshly-registered, unverified account
+   // does not appear to be logged in while email verification is pending.
+   return <div>
+    <Navbar user={null}/>
     {children}
     </div>;
 }
