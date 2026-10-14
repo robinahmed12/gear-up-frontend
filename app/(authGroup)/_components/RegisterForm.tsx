@@ -110,8 +110,8 @@ export function RegisterForm() {
         return;
       }
 
-      toast.success(`Account created as ${result.data.user.role} Successfully`);
-      // New accounts must verify their email before they can book.
+      // New accounts must verify their email before they can book. Do not
+      // announce success or log in until verification is complete.
       setVerifiedEmail(result.data.user.email);
     });
   };
