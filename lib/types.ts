@@ -164,10 +164,25 @@ export interface CancellationOutcome {
   depositReleased: boolean;
 }
 
-export interface AvailabilityCheckResult {
+export interface AvailabilityResult {
   available: boolean;
   isAvailable: boolean;
+  stock: number;
+  reserved: number;
+  remaining: number;
+  quantity: number;
+  blocked: boolean;
   reason?: string;
+}
+
+export interface AvailabilityBlock {
+  id: string;
+  gearId: string;
+  startDate: string;
+  endDate: string;
+  reason?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Matches the backend's standard response envelope
