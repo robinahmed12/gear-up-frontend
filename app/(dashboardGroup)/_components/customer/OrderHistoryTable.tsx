@@ -12,6 +12,8 @@ import { useRentalsQuery } from "@/lib/use-rentals-query";
 import { formatMoney } from "@/lib/format";
 import OrderStatusBadge from "./OrderStatusBadge";
 import { RentalOrder } from "@/lib/types";
+import { cancelRentalAction } from "@/app/(dashboardGroup)/_actions/rentalActions";
+import { toast } from "sonner";
 
 interface OrderHistoryTableProps {
   rentals: RentalOrder[];
@@ -123,6 +125,29 @@ export default function OrderHistoryTable({
                           <Link href={`/dashboard/orders/${rental.id}/pay`}>
                             Pay Now
                           </Link>
+                        </Button>
+                      )}
+
+                      {['PLACED', 'CONFIRMED', 'PAID'].includes(rental.status) && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={async () => {
+                            if (!confirm('Cancel this rental?')) return;
+                            const res = await cancelRentalAction(rental.id);
+                            if (res.success) {
+                              const c = (res as any).data?.cancellation;
+                              toast.success(
+                                `Cancelled (${c?.tier ?? '...'})${c?.refundableAmount ? `, refund ${c.refundableAmount}` : ''}${
+                                  c?.depositReleased ? ', deposit released' : ''
+                                }`,
+                              );
+                            } else {
+                              toast.error(res.message);
+                            }
+                          }}
+                        >
+                          Cancel
                         </Button>
                       )}
 

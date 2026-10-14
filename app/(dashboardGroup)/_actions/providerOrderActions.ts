@@ -12,6 +12,33 @@ interface ActionResult {
   message: string;
 }
 
+export async function cancelProviderOrderAction(
+  orderId: string,
+): Promise<ActionResult> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('accessToken')?.value;
+
+    const res = await fetch(`${process.env.BACKEND_API_URL}/api/provider/orders/${orderId}/cancel`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await res.json();
+
+    if (!res.ok || !result.success) {
+      return { success: false, message: result.message ?? 'Provider cancel failed' };
+    }
+
+    revalidateTag('provider-orders', 'max');
+    return { success: true, message: result.message ?? 'Order cancelled' };
+  } catch {
+    return { success: false, message: 'Could not reach the server' };
+  }
+}
+
 export async function updateOrderStatusAction(
   orderId: string,
   status: Extract<RentalStatus, 'CONFIRMED' | 'PICKED_UP' | 'RETURNED'>,

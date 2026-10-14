@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { OrderStatusBadge } from "@/components/shared/order-status-badge";
 import { Button } from "@/components/ui/button";
 import { useUpdateOrderStatus } from "@/hooks/use-provider-orders-query";
+import { cancelProviderOrderAction } from "@/app/(dashboardGroup)/_actions/providerOrderActions";
 
 import type { NextStatus, RentalOrder } from "@/lib/types";
 
@@ -219,7 +220,25 @@ export function IncomingOrdersTable({
 
                 {/* Action */}
                 <td className="px-5 py-4 text-right">
-                  <div className="flex justify-end">{renderAction(order)}</div>
+                  <div className="flex justify-end gap-1">
+                  {renderAction(order)}
+                  {['PLACED', 'CONFIRMED', 'PAID'].includes(order.status) && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="destructive"
+                      onClick={async () => {
+                        if (!confirm(`Cancel order #${order.id.slice(0, 6)}?`))
+                          return;
+                        const result = await cancelProviderOrderAction(order.id);
+                        if (result.success) toast.success(result.message);
+                        else toast.error(result.message);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  )}
+                </div>
                 </td>
               </tr>
             ))}
