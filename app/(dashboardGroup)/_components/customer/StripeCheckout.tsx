@@ -1,7 +1,7 @@
 "use client";
 
 import { Elements } from "@stripe/react-stripe-js";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { formatMoney } from "@/lib/format";
 import { CheckoutForm } from "./StripeCheckoutRedirect";
 import type { RentalBreakdown } from "@/lib/types";
@@ -22,6 +22,7 @@ export default function StripeCheckout({
   deposit,
 }: Props) {
   const currency = breakdown?.currency ?? "USD";
+  const stripeConfigured = isStripeConfigured();
 
   return (
     <div className="mx-auto max-w-md p-6">
@@ -65,17 +66,30 @@ export default function StripeCheckout({
           <span className="font-bold">{formatMoney(amount, currency)}</span>
         </div>
 
-        <Elements
-          stripe={getStripe()}
-          options={{
-            clientSecret,
-            appearance: {
-              theme: "stripe",
-            },
-          }}
-        >
-          <CheckoutForm orderId={orderId} amount={amount} currency={currency} clientSecret={clientSecret} deposit={deposit} />
-        </Elements>
+        {stripeConfigured ? (
+          <Elements
+            stripe={getStripe()}
+            options={{
+              clientSecret,
+              appearance: {
+                theme: "stripe",
+              },
+            }}
+          >
+            <CheckoutForm orderId={orderId} amount={amount} currency={currency} clientSecret={clientSecret} deposit={deposit} />
+          </Elements>
+        ) : (
+          <p
+            role="alert"
+            className="rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+          >
+            Payment is unavailable because Stripe is not configured. Set a valid
+            <code className="mx-1 rounded bg-muted px-1 py-0.5 text-xs">
+              NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+            </code>
+            in the frontend environment and restart the app.
+          </p>
+        )}
       </div>
     </div>
   );

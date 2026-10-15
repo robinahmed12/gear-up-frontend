@@ -29,8 +29,8 @@ const sidePanelFeatures = [
 ];
 
 const demoAccounts = [
-  { label: 'Customer', email: 'robin.gearup@gmail.com', password: 'Password@#12' },
-  { label: 'Provider', email: 'robin.gearup12@gmail.com', password: 'Password@#12' },
+  { label: 'Customer', email: 'robin.gearup@yopmail.com', password: 'Password@#12' },
+  { label: 'Provider', email: 'robin.gearup12@yopmail.com', password: 'Password@#12' },
   { label: 'Admin', email: 'admin@gearup.com', password: 'Admin@123' },
 ] as const;
 

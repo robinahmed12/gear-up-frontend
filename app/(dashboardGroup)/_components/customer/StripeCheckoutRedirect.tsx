@@ -29,52 +29,75 @@ export function CheckoutForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) {
+      setErrorMessage(
+        'Payment form is still loading. Please wait a moment and try again.',
+      );
+      return;
+    }
 
     setIsProcessing(true);
     setErrorMessage(null);
 
-    // Collect the card payment method once so the same card can authorize
-    // both the rental charge and the separate security-deposit hold.
-    const { paymentMethod, error: pmError } =
-      await stripe.createPaymentMethod({ elements });
-    if (pmError || !paymentMethod) {
-      setErrorMessage(pmError?.message ?? 'Unable to process card details.');
-      setIsProcessing(false);
-      return;
-    }
-
-    const { error: chargeError, paymentIntent: chargeIntent } =
-      await stripe.confirmCardPayment(clientSecret, {
-        payment_method: paymentMethod.id,
-        return_url: `${window.location.origin}/payment/success?orderId=${orderId}`,
-      });
-
-    if (chargeError || !chargeIntent || chargeIntent.status !== 'succeeded') {
-      setErrorMessage(chargeError?.message ?? 'Charge could not be completed.');
-      setIsProcessing(false);
-      router.push(`/payment/cancel?orderId=${orderId}`);
-      return;
-    }
-
-    // Authorize the security-deposit hold (manual capture) on the same card.
-    if (deposit?.clientSecret) {
-      const { error: depositError, paymentIntent: depositIntent } =
-        await stripe.confirmCardPayment(deposit.clientSecret, {
-          payment_method: paymentMethod.id,
+    try {
+      // confirmPayment drives the Payment Element (cards, wallets, redirect
+      // methods). `redirect: 'if_required'` keeps us on the page for the
+      // non-redirect case so we can also authorize the deposit hold before
+      // navigating; 3-D Secure / redirect methods fall back to return_url.
+      const { error: chargeError, paymentIntent: chargeIntent } =
+        await stripe.confirmPayment({
+          elements,
+          clientSecret,
+          confirmParams: {
+            return_url: `${window.location.origin}/payment/success?orderId=${orderId}`,
+          },
+          redirect: 'if_required',
         });
 
-      if (depositError || !depositIntent) {
-        setErrorMessage(
-          depositError?.message ??
-            'Security deposit authorization failed; contact support.',
-        );
-        setIsProcessing(false);
+      if (chargeError) {
+        setErrorMessage(chargeError.message ?? 'Charge could not be completed.');
+        router.push(`/payment/cancel?orderId=${orderId}`);
         return;
       }
-    }
 
-    router.push(`/payment/success?orderId=${orderId}`);
+      if (!chargeIntent) {
+        // Stripe is redirecting the customer (3-D Secure or a redirect-based
+        // method); it will return to `return_url` on its own.
+        return;
+      }
+
+      // Authorize the security-deposit hold (manual capture) on the same
+      // payment method that just paid the rental charge.
+      if (deposit?.clientSecret && chargeIntent.payment_method) {
+        const paymentMethodId =
+          typeof chargeIntent.payment_method === 'string'
+            ? chargeIntent.payment_method
+            : chargeIntent.payment_method.id;
+
+        const { error: depositError } = await stripe.confirmCardPayment(
+          deposit.clientSecret,
+          { payment_method: paymentMethodId },
+        );
+
+        if (depositError) {
+          setErrorMessage(
+            depositError.message ??
+              'Security deposit authorization failed; contact support.',
+          );
+          return;
+        }
+      }
+
+      router.push(`/payment/success?orderId=${orderId}`);
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : 'Payment failed unexpectedly. Please try again.',
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   }
 
   return (
