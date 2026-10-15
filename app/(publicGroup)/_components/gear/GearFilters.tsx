@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface Category {
   id: string;
@@ -16,65 +17,108 @@ interface GearFiltersProps {
   categories: Category[];
 }
 
-const sortOptions = [
-  { value: '', label: 'Sort by' },
-  { value: 'latest', label: 'Newest first' },
-  { value: 'price_asc', label: 'Price: low to high' },
-  { value: 'price_desc', label: 'Price: high to low' },
-];
+const FILTER_KEYS = ['search', 'category', 'minPrice', 'maxPrice', 'isAvailable'] as const;
 
 export default function GearFilters({ categories }: GearFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const urlSearchValue = searchParams.get('search') ?? '';
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const priceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Local input state, kept in sync with the URL during render rather than
-  // in a useEffect. React's own guidance: when local state needs to reset
-  // whenever an external value (here, the URL) changes, compare against a
-  // tracked "previous" value and call setState directly in the render body
-  // — React re-renders immediately with the corrected state before
-  // painting, instead of committing a stale render then firing an effect
-  // that causes a second, cascading render.
-  const [prevUrlSearchValue, setPrevUrlSearchValue] = useState(urlSearchValue);
-  const [searchValue, setSearchValue] = useState(urlSearchValue);
+  const urlSearch = searchParams.get('search') ?? '';
+  const urlMin = searchParams.get('minPrice') ?? '';
+  const urlMax = searchParams.get('maxPrice') ?? '';
+  const urlSignature = `${urlSearch}\u0000${urlMin}\u0000${urlMax}`;
 
-  if (urlSearchValue !== prevUrlSearchValue) {
-    setPrevUrlSearchValue(urlSearchValue);
-    setSearchValue(urlSearchValue);
+  // Local input state, kept in sync with the URL during render rather than in
+  // an effect, so back/forward and "clear all" reset the fields immediately.
+  const [search, setSearch] = useState(urlSearch);
+  const [minPrice, setMinPrice] = useState(urlMin);
+  const [maxPrice, setMaxPrice] = useState(urlMax);
+  const [prevSignature, setPrevSignature] = useState(urlSignature);
+
+  if (urlSignature !== prevSignature) {
+    setPrevSignature(urlSignature);
+    setSearch(urlSearch);
+    setMinPrice(urlMin);
+    setMaxPrice(urlMax);
+  }
+
+  const category = searchParams.get('category') ?? '';
+  const availableOnly = searchParams.get('isAvailable') === 'true';
+
+  function navigate(params: URLSearchParams) {
+    params.set('page', '1');
+    router.push(`/gear?${params.toString()}`);
   }
 
   function updateFilter(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
-
     if (value) {
       params.set(key, value);
     } else {
       params.delete(key);
     }
+    navigate(params);
+  }
 
-    params.set('page', '1');
-    router.push(`/gear?${params.toString()}`);
+  function removeFilter(key: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(key);
+    navigate(params);
   }
 
   // Search updates the URL 400ms after typing stops, not on every keystroke.
   function handleSearchChange(value: string) {
-    setSearchValue(value);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => updateFilter('search', value), 400);
+    setSearch(value);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => updateFilter('search', value), 400);
+  }
+
+  // Price has two fields; debounce both together so we only navigate once.
+  function handlePriceChange(key: 'minPrice' | 'maxPrice', value: string) {
+    const nextMin = key === 'minPrice' ? value : minPrice;
+    const nextMax = key === 'maxPrice' ? value : maxPrice;
+
+    if (key === 'minPrice') setMinPrice(value);
+    else setMaxPrice(value);
+
+    if (priceTimer.current) clearTimeout(priceTimer.current);
+    priceTimer.current = setTimeout(() => {
+      // Skip the request when the range is impossible — backend rejects min > max.
+      if (nextMin && nextMax && Number(nextMin) > Number(nextMax)) return;
+      const params = new URLSearchParams(searchParams.toString());
+      if (nextMin) params.set('minPrice', nextMin);
+      else params.delete('minPrice');
+      if (nextMax) params.set('maxPrice', nextMax);
+      else params.delete('maxPrice');
+      navigate(params);
+    }, 500);
   }
 
   function clearFilters() {
-    setSearchValue('');
-    router.push('/gear');
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    if (priceTimer.current) clearTimeout(priceTimer.current);
+    setSearch('');
+    setMinPrice('');
+    setMaxPrice('');
     setIsMobileOpen(false);
+    router.push('/gear');
   }
 
-  const activeFilterCount = ['search', 'category', 'minPrice', 'maxPrice', 'sort'].filter((key) =>
-    searchParams.get(key),
-  ).length;
+  const activeFilterCount = FILTER_KEYS.filter((key) => searchParams.get(key)).length;
+
+  const activeChips: { key: string; label: string }[] = [];
+  if (urlSearch) activeChips.push({ key: 'search', label: `“${urlSearch}”` });
+  if (category) {
+    const name = categories.find((c) => c.id === category)?.name ?? 'Category';
+    activeChips.push({ key: 'category', label: name });
+  }
+  if (urlMin) activeChips.push({ key: 'minPrice', label: `Min ৳${urlMin}` });
+  if (urlMax) activeChips.push({ key: 'maxPrice', label: `Max ৳${urlMax}` });
+  if (availableOnly) activeChips.push({ key: 'isAvailable', label: 'Available only' });
 
   const filterBody = (
     <div className="space-y-6">
@@ -89,7 +133,7 @@ export default function GearFilters({ categories }: GearFiltersProps) {
             id="gear-search"
             placeholder="Tent, mountain bike, kayak..."
             className="pl-9"
-            value={searchValue}
+            value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
@@ -97,66 +141,102 @@ export default function GearFilters({ categories }: GearFiltersProps) {
 
       {/* Category */}
       <div className="space-y-2">
-        <label htmlFor="gear-category" className="text-sm font-medium text-foreground">
-          Category
-        </label>
-        <select
-          id="gear-category"
-          className="w-full rounded-md border border-input bg-background p-2 text-sm text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          value={searchParams.get('category') ?? ''}
-          onChange={(e) => updateFilter('category', e.target.value)}
-        >
-          <option value="">All categories</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
+        <span className="text-sm font-medium text-foreground">Category</span>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => updateFilter('category', '')}
+            className={cn(
+              'rounded-full border px-3 py-1.5 text-sm font-medium transition',
+              category === ''
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-input bg-background text-foreground hover:bg-secondary',
+            )}
+          >
+            All
+          </button>
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => updateFilter('category', c.id)}
+              className={cn(
+                'rounded-full border px-3 py-1.5 text-sm font-medium transition',
+                category === c.id
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-input bg-background text-foreground hover:bg-secondary',
+              )}
+            >
+              {c.name}
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       {/* Price range */}
       <div className="space-y-2">
         <span className="text-sm font-medium text-foreground">Price per day</span>
         <div className="grid grid-cols-2 gap-3">
-          <Input
-            type="number"
-            min={0}
-            placeholder="Min"
-            defaultValue={searchParams.get('minPrice') ?? ''}
-            onChange={(e) => updateFilter('minPrice', e.target.value)}
-          />
-          <Input
-            type="number"
-            min={0}
-            placeholder="Max"
-            defaultValue={searchParams.get('maxPrice') ?? ''}
-            onChange={(e) => updateFilter('maxPrice', e.target.value)}
-          />
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              ৳
+            </span>
+            <Input
+              type="number"
+              min={0}
+              inputMode="numeric"
+              placeholder="Min"
+              className="pl-7"
+              value={minPrice}
+              onChange={(e) => handlePriceChange('minPrice', e.target.value)}
+            />
+          </div>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              ৳
+            </span>
+            <Input
+              type="number"
+              min={0}
+              inputMode="numeric"
+              placeholder="Max"
+              className="pl-7"
+              value={maxPrice}
+              onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Sort */}
+      {/* Availability */}
       <div className="space-y-2">
-        <label htmlFor="gear-sort" className="text-sm font-medium text-foreground">
-          Sort
-        </label>
-        <select
-          id="gear-sort"
-          className="w-full rounded-md border border-input bg-background p-2 text-sm text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          value={searchParams.get('sort') ?? ''}
-          onChange={(e) => updateFilter('sort', e.target.value)}
+        <span className="text-sm font-medium text-foreground">Availability</span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={availableOnly}
+          onClick={() => updateFilter('isAvailable', availableOnly ? '' : 'true')}
+          className="flex w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground transition hover:bg-secondary"
         >
-          {sortOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          <span>Available only</span>
+          <span
+            className={cn(
+              'relative h-5 w-9 rounded-full transition-colors',
+              availableOnly ? 'bg-primary' : 'bg-muted-foreground/30',
+            )}
+          >
+            <span
+              className={cn(
+                'absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform',
+                availableOnly ? 'translate-x-4' : 'translate-x-0.5',
+              )}
+            />
+          </span>
+        </button>
       </div>
 
       <Button variant="outline" className="w-full" onClick={clearFilters}>
-        Clear filters
+        Clear all filters
       </Button>
     </div>
   );
@@ -191,8 +271,8 @@ export default function GearFilters({ categories }: GearFiltersProps) {
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             onClick={() => setIsMobileOpen(false)}
           />
-          <div className="absolute inset-y-0 right-0 w-full max-w-sm overflow-y-auto bg-background p-5 shadow-xl">
-            <div className="mb-5 flex items-center justify-between">
+          <div className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-background shadow-xl">
+            <div className="flex items-center justify-between border-b border-border p-4">
               <h2 className="text-lg font-semibold text-foreground">Filters</h2>
               <button
                 onClick={() => setIsMobileOpen(false)}
@@ -202,13 +282,18 @@ export default function GearFilters({ categories }: GearFiltersProps) {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            {filterBody}
+            <div className="flex-1 overflow-y-auto p-5">{filterBody}</div>
+            <div className="border-t border-border p-4">
+              <Button className="w-full" onClick={() => setIsMobileOpen(false)}>
+                Show results
+              </Button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden rounded-lg border border-border bg-card p-5 lg:block">
+      <div className="hidden rounded-xl border border-border bg-card p-5 lg:block">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground">Filters</h2>
           {activeFilterCount > 0 && (
@@ -217,6 +302,23 @@ export default function GearFilters({ categories }: GearFiltersProps) {
             </span>
           )}
         </div>
+
+        {activeChips.length > 0 && (
+          <div className="mb-5 flex flex-wrap gap-2">
+            {activeChips.map((chip) => (
+              <button
+                key={chip.key}
+                type="button"
+                onClick={() => removeFilter(chip.key)}
+                className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground transition hover:bg-secondary/70"
+              >
+                {chip.label}
+                <X className="h-3 w-3" />
+              </button>
+            ))}
+          </div>
+        )}
+
         {filterBody}
       </div>
     </>

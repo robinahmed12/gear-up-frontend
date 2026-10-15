@@ -9,10 +9,10 @@ import { getGear } from '../../_actions/getGearList';
 
 
 export async function FeaturedGear() {
-  const gear = await getGear();
-    
+  const gear = await getGear({ limit: 6 });
+  const items = gear?.data ?? [];
 
-  if (gear.length === 0) return null;
+  if (items.length === 0) return null;
 
   return (
     <section id="featured-gear" className="scroll-mt-20 bg-secondary/40 py-16 sm:py-20">
@@ -35,7 +35,7 @@ export async function FeaturedGear() {
         </div>
 
         <div className="mt-10">
-          <GearGrid gears={gear.data} />
+          <GearGrid gears={items} />
         </div>
 
         <div className="mt-8 text-center sm:hidden">
