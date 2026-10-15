@@ -30,7 +30,10 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section
+      id="how-it-works"
+      className="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+    >
       <div className="max-w-2xl">
         <span className="text-sm font-semibold uppercase tracking-wide text-accent">
           How it works

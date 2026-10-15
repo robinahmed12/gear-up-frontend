@@ -12,7 +12,10 @@ const categories = [
 
 export function CategoryShowcase() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section
+      id="categories"
+      className="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+    >
       <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
         Shop by category
       </h2>

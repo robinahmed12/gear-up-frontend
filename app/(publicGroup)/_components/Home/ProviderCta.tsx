@@ -5,7 +5,10 @@ import { Button } from '@/components/ui/button';
 
 export function ProviderCta() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section
+      id="become-a-provider"
+      className="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+    >
       <div className="relative overflow-hidden rounded-2xl bg-accent px-6 py-12 text-accent-foreground sm:px-12 sm:py-16">
         <Tent className="absolute -right-6 -top-6 h-40 w-40 text-accent-foreground/10" />
 

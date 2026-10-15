@@ -1,10 +1,7 @@
 import { redirect } from "next/navigation";
 
-import { Navbar } from "@/components/shared/navbar";
-import Sidebar from "./_components/DashboardSidebar";
-
 import { getMe } from "@/service/getMe";
-import { User } from "@/lib/types";
+import { DashboardShell } from "./_components/DashboardShell";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -13,27 +10,13 @@ interface DashboardLayoutProps {
 export default async function DashboardGroupLayout({
   children,
 }: DashboardLayoutProps) {
-   const result = await getMe();
+  const result = await getMe();
   const user = result.success ? result.data.user : null;
 
-  // Defense in depth (middleware should also protect these routes)
+  // Defense in depth (proxy.ts also protects these routes)
   if (!user) {
     redirect("/login");
   }
 
-  return (
-    <div className="flex min-h-screen bg-muted/20">
-      {/* Sidebar */}
-      <Sidebar user={user} />
-
-      {/* Main Content */}
-      <div className="flex flex-1 flex-col">
-        <Navbar user={user} />
-
-        <main className="flex-1 p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+  return <DashboardShell user={user}>{children}</DashboardShell>;
 }

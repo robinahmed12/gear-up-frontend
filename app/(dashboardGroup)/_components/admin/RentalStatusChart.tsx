@@ -23,14 +23,14 @@ export function RentalStatusChart({ data }: RentalStatusChartProps) {
 
   if (total === 0) {
     return (
-      <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+      <div className="rounded-xl border border-border bg-card p-8 shadow-sm text-center text-sm text-muted-foreground">
         No rental orders yet.
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
       <h3 className="text-sm font-semibold text-foreground">Rentals by status</h3>
 
       {/* Stacked bar */}

@@ -26,7 +26,10 @@ const features = [
 
 export function TrustFeatures() {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+    <section
+      id="why-gearup"
+      className="mx-auto max-w-7xl scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:px-8"
+    >
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {features.map(({ icon: Icon, title, description }) => (
           <div key={title} className="rounded-lg border border-border bg-card p-6">

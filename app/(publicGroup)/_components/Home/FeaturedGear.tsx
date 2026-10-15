@@ -15,7 +15,7 @@ export async function FeaturedGear() {
   if (gear.length === 0) return null;
 
   return (
-    <section className="bg-secondary/40 py-16 sm:py-20">
+    <section id="featured-gear" className="scroll-mt-20 bg-secondary/40 py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between gap-4">
           <div>

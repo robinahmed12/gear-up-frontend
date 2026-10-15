@@ -1,9 +1,10 @@
 // app/(dashboardGroup)/dashboard/page.tsx
 import Link from 'next/link';
-import { ClipboardList, Wallet, Clock, ArrowRight, Star } from 'lucide-react';
+import { ClipboardList, Wallet, Clock, ArrowRight, Star, LayoutDashboard } from 'lucide-react';
 import { getMyRentals } from '@/service/getMyRentals';
 import { getMyPayments } from '@/service/getMyPayments';
 import { StatCard } from '../_components/admin/StatCard';
+import { PageHeader } from '../_components/PageHeader';
 import { OrderStatusBadge } from '@/components/shared/order-status-badge';
 import { Button } from '@/components/ui/button';
 import { Payment, RentalOrder } from '@/lib/types';
@@ -33,14 +34,11 @@ export default async function CustomerDashboardPage() {
 
   return (
     <div className="space-y-8 p-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          My dashboard
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage your rentals, payments, and orders.
-        </p>
-      </div>
+      <PageHeader
+        icon={LayoutDashboard}
+        title="My dashboard"
+        description="Manage your rentals, payments, and orders."
+      />
 
       {/* Awaiting payment banner — only shows when relevant */}
       {awaitingPayment.length > 0 && (
@@ -106,7 +104,7 @@ export default async function CustomerDashboardPage() {
 
       {/* Recent rentals + quick links */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="rounded-lg border border-border bg-card lg:col-span-2">
+        <div className="rounded-xl border border-border bg-card shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between border-b border-border p-5">
             <h2 className="text-sm font-semibold text-foreground">Recent rentals</h2>
             <Link
@@ -150,7 +148,7 @@ export default async function CustomerDashboardPage() {
           )}
         </div>
 
-        <div className="space-y-3 rounded-lg border border-border bg-card p-5">
+        <div className="space-y-3 rounded-xl border border-border bg-card p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-foreground">Quick links</h2>
           <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
             <Link href="/gear">Browse gear</Link>

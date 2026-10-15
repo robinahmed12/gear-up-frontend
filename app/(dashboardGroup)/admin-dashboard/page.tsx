@@ -1,7 +1,8 @@
 // app/(dashboardGroup)/admin-dashboard/page.tsx
-import { Users, Store, PackageCheck, ClipboardList, Wallet } from 'lucide-react';
+import { Users, Store, PackageCheck, ClipboardList, Wallet, ShieldCheck } from 'lucide-react';
 import { getAdminStats } from '@/service/getAdminStats';
 import { StatCard } from '../_components/admin/StatCard';
+import { PageHeader } from '../_components/PageHeader';
 import { RentalStatusChart } from '../_components/admin/RentalStatusChart';
 
 export default async function AdminDashboardPage() {
@@ -11,12 +12,12 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-8 p-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Platform overview</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          A snapshot of everything happening on GearUp right now.
-        </p>
-      </div>
+      <PageHeader
+        icon={ShieldCheck}
+        title="Platform overview"
+        description="Everything happening across the marketplace."
+      />
+
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -56,7 +57,7 @@ export default async function AdminDashboardPage() {
           <RentalStatusChart data={stats.rentalsByStatus} />
         </div>
 
-        <div className="space-y-3 rounded-lg border border-border bg-card p-5">
+        <div className="space-y-3 rounded-xl border border-border bg-card p-5 shadow-sm">
           <h3 className="text-sm font-semibold text-foreground">Needs attention</h3>
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Newly placed orders</span>

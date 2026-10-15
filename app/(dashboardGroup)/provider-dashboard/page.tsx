@@ -1,10 +1,11 @@
 // Provider overview — total gear listed, active rentals, pending orders. Consumes service/getProviderGear.ts, service/getProviderOrders.ts
 // app/(dashboardGroup)/provider-dashboard/page.tsx
 import Link from 'next/link';
-import { Package, Clock, TrendingUp, ArrowRight, AlertTriangle } from 'lucide-react';
+import { Package, Clock, TrendingUp, ArrowRight, AlertTriangle, LayoutDashboard } from 'lucide-react';
 import { getProviderGear } from '@/service/getProviderGear';
 import { getProviderOrders } from '@/service/getProviderOrders';
 import { StatCard } from '../_components/admin/StatCard';
+import { PageHeader } from '../_components/PageHeader';
 import { OrderStatusBadge } from '@/components/shared/order-status-badge';
 import { Button } from '@/components/ui/button';
 
@@ -31,12 +32,11 @@ export default async function DashboardgroupProviderDashboardPage() {
 
   return (
     <div className="space-y-8 p-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Overview</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          What is happening with your listings right now.
-        </p>
-      </div>
+      <PageHeader
+        icon={LayoutDashboard}
+        title="Overview"
+        description="What is happening with your listings right now."
+      />
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -81,7 +81,7 @@ export default async function DashboardgroupProviderDashboardPage() {
 
       {/* Recent orders + quick links */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="rounded-lg border border-border bg-card lg:col-span-2">
+        <div className="rounded-xl border border-border bg-card shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between border-b border-border p-5">
             <h2 className="text-sm font-semibold text-foreground">Recent orders</h2>
             <Link
@@ -120,7 +120,7 @@ export default async function DashboardgroupProviderDashboardPage() {
           )}
         </div>
 
-        <div className="space-y-3 rounded-lg border border-border bg-card p-5">
+        <div className="space-y-3 rounded-xl border border-border bg-card shadow-sm p-5">
           <h2 className="text-sm font-semibold text-foreground">Quick actions</h2>
           <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
             <Link href="/provider-dashboard/gear/new">List new gear</Link>

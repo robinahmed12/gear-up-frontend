@@ -30,6 +30,11 @@ const DASHBOARD_PATH: Record<User["role"], string> = {
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/gear", label: "Browse Gear" },
+  { href: "/#featured-gear", label: "Featured Gear" },
+  { href: "/#categories", label: "Categories" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#why-gearup", label: "Why GearUp" },
+  { href: "/#become-a-provider", label: "Become a provider" },
 ];
 
 function getInitials(name: string) {
@@ -65,6 +70,10 @@ export function Navbar({ user }: NavbarProps) {
   };
 
   const isActive = (href: string) => {
+    // Anchor links scroll within a section and are never a "current page".
+    if (href.includes("#")) {
+      return false;
+    }
     if (href === "/") {
       return pathname === "/";
     }
@@ -87,7 +96,7 @@ export function Navbar({ user }: NavbarProps) {
           </Link>
 
           {/* Desktop nav links */}
-          <div className="hidden md:flex md:items-center md:gap-6">
+          <div className="hidden lg:flex lg:items-center lg:gap-5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -104,7 +113,7 @@ export function Navbar({ user }: NavbarProps) {
           </div>
 
           {/* Desktop right side */}
-          <div className="hidden md:flex md:items-center md:gap-3">
+          <div className="hidden lg:flex lg:items-center lg:gap-3">
             {user ? (
               <div
                 className="relative"
@@ -188,7 +197,7 @@ export function Navbar({ user }: NavbarProps) {
           {/* Mobile toggle */}
           <button
             type="button"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setIsMobileMenuOpen((open) => !open)}
             aria-label="Toggle menu"
           >
@@ -202,7 +211,7 @@ export function Navbar({ user }: NavbarProps) {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <div className="border-t border-border py-4 md:hidden">
+          <div className="border-t border-border py-4 lg:hidden">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <Link
