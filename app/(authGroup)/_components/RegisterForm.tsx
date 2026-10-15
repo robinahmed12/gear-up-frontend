@@ -21,7 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { registerAction } from '../_actions/authActions';
-import { VerifyEmailPanel } from '../_components/VerifyEmailPanel';
+import { VerifyOtpForm } from '../_components/VerifyOtpForm';
 import { toast } from 'sonner';
 
 const registerSchema = z
@@ -68,7 +68,7 @@ export function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
+  const [pendingEmail, setPendingEmail] = useState<{ email: string; devOtp?: string } | null>(null);
 
   const {
     register,
@@ -81,11 +81,11 @@ export function RegisterForm() {
     defaultValues: { role: 'CUSTOMER' },
   });
 
-  if (verifiedEmail) {
+  if (pendingEmail) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="w-full max-w-md">
-          <VerifyEmailPanel email={verifiedEmail} />
+          <VerifyOtpForm email={pendingEmail.email} initialDevOtp={pendingEmail.devOtp} />
         </div>
       </div>
     );
@@ -110,9 +110,9 @@ export function RegisterForm() {
         return;
       }
 
-      // New accounts must verify their email before they can book. Do not
-      // announce success or log in until verification is complete.
-      setVerifiedEmail(result.data.user.email);
+      toast.success('Verification code sent. Check your email.');
+      // The account is created only after the emailed code is confirmed.
+      setPendingEmail({ email: result.data.email, devOtp: result.data.devOtp });
     });
   };
 

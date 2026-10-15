@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { createRentalAction } from '@/app/(dashboardGroup)/_actions/rentalActions';
-import { resendVerificationAction } from '@/app/(authGroup)/_actions/authActions';
 import { getGearAvailabilityAction } from '@/app/(publicGroup)/_actions/getGearAvailability';
 import type { AvailabilityResult } from '@/lib/types';
 
@@ -40,7 +39,6 @@ export default function RentNowForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [verificationError, setVerificationError] = useState(false);
-  const [resending, setResending] = useState(false);
   const [availability, setAvailability] = useState<
     (AvailabilityResult & { key: string }) | null
   >(null);
@@ -160,22 +158,9 @@ export default function RentNowForm({
             type="button"
             variant="outline"
             size="sm"
-            disabled={resending}
-            onClick={() => {
-              setResending(true);
-              resendVerificationAction()
-                .then((r) => {
-                  if (r.success) {
-                    toast.success(r.message);
-                    setVerificationError(false);
-                  } else {
-                    toast.error(r.message);
-                  }
-                })
-                .finally(() => setResending(false));
-            }}
+            onClick={() => router.push('/verify-email?pending')}
           >
-            {resending ? 'Sending...' : 'Resend verification email'}
+            Go to verification
           </Button>
         </div>
       )}

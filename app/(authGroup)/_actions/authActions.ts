@@ -11,7 +11,7 @@ interface RegisterInput {
 }
 
 type RegisterResult =
-  | { success: true; data: { user: User; token: string; refreshToken: string } }
+  | { success: true; data: { email: string; devOtp?: string } }
   | { success: false; message: string };
 
 export async function registerAction(
@@ -38,6 +38,49 @@ export async function registerAction(
       };
     }
 
+    // No account exists yet — the backend emailed a one-time code and holds
+    // the pending registration (password already hashed) until it's verified.
+    return {
+      success: true,
+      data: { email: result.data.email, devOtp: result.data.devOtp },
+    };
+  } catch {
+    return {
+      success: false,
+      message: "Could not reach the server. Please try again.",
+    };
+  }
+}
+
+type VerifyOtpResult =
+  | { success: true; data: { user: User } }
+  | { success: false; message: string };
+
+// Confirm the registration code — this is what actually creates the account
+// and signs the new user in.
+export async function verifyRegistrationOtpAction(
+  email: string,
+  otp: string,
+): Promise<VerifyOtpResult> {
+  try {
+    const res = await fetch(
+      `${process.env.BACKEND_API_URL}/api/auth/register/verify-otp`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      },
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || !result.success) {
+      return {
+        success: false,
+        message: result.message ?? "Verification failed",
+      };
+    }
+
     const cookieStore = await cookies();
     cookieStore.set("accessToken", result.data.token, {
       httpOnly: true,
@@ -51,19 +94,47 @@ export async function registerAction(
       maxAge: 60 * 60 * 24 * 30,
       path: "/",
     });
-    // Newly registered accounts are not verified yet, so keep them gated.
-    cookieStore.set("emailPendingVerification", "1", {
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
-    cookieStore.set("pendingVerificationEmail", result.data.user.email, {
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
+    // The account is verified at creation, so clear any lingering gate flags.
+    cookieStore.delete("emailPendingVerification");
+    cookieStore.delete("pendingVerificationEmail");
 
-    return { success: true, data: result.data };
+    return { success: true, data: { user: result.data.user } };
+  } catch {
+    return {
+      success: false,
+      message: "Could not reach the server. Please try again.",
+    };
+  }
+}
+
+// Re-send the registration verification code.
+export async function resendRegistrationOtpAction(
+  email: string,
+): Promise<{ success: boolean; message: string; devOtp?: string }> {
+  try {
+    const res = await fetch(
+      `${process.env.BACKEND_API_URL}/api/auth/register/resend-otp`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      },
+    );
+
+    const result = await res.json();
+
+    if (!res.ok || !result.success) {
+      return {
+        success: false,
+        message: result.message ?? "Could not resend the verification code",
+      };
+    }
+
+    return {
+      success: true,
+      message: result.message ?? "A new verification code has been sent.",
+      devOtp: result.data?.devOtp,
+    };
   } catch {
     return {
       success: false,
@@ -171,58 +242,6 @@ export async function verifyEmailAction(
     return {
       success: true,
       message: result.message ?? "Email verified successfully",
-    };
-  } catch {
-    return {
-      success: false,
-      message: "Could not reach the server. Please try again.",
-    };
-  }
-}
-
-// Resend the verification email to the logged-in (still unverified) user.
-export async function resendVerificationAction(): Promise<{
-  success: boolean;
-  message: string;
-}> {
-  try {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-
-    const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/auth/resend-verification`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-
-    const contentType = (res.headers.get("content-type") ?? "").toLowerCase();
-    let result: { success?: boolean; message?: string } = {};
-    try {
-      if (contentType.includes("application/json")) {
-        result = await res.json();
-      } else {
-        result = { success: res.ok, message: await res.text() };
-      }
-    } catch (e) {
-      result = { success: false, message: (e as Error).message };
-    }
-
-    if (!res.ok || !result.success) {
-      return {
-        success: false,
-        message:
-          result.message?.trim() || "Could not resend verification email",
-      };
-    }
-
-    return {
-      success: true,
-      message: result.message ?? "Verification email sent",
     };
   } catch {
     return {

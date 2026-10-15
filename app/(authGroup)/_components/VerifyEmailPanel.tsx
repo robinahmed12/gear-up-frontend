@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { Loader2, LogOut, Mail, ShieldCheck } from 'lucide-react';
 
-import { resendVerificationAction } from '../_actions/authActions';
+import { resendRegistrationOtpAction } from '../_actions/authActions';
 import { logoutAction } from '@/service/logout';
 import { Button } from '@/components/ui/button';
 
@@ -13,7 +13,11 @@ export function VerifyEmailPanel({ email, pending = false }: { email?: string; p
 
   function resend() {
     startTransition(async () => {
-      const result = await resendVerificationAction();
+      if (!email) {
+        setMessage('We could not determine your email address. Please log in again.');
+        return;
+      }
+      const result = await resendRegistrationOtpAction(email);
       setMessage(result.message);
     });
   }
