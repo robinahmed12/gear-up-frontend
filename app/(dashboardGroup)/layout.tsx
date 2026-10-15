@@ -18,7 +18,7 @@ export default async function DashboardGroupLayout({
 
   // Defense in depth (middleware should also protect these routes)
   if (!user) {
-    redirect("/auth/login");
+    redirect("/login");
   }
 
   return (

@@ -6,11 +6,17 @@ import { cookies } from 'next/headers';
 interface CreatePaymentResult {
   success: boolean;
   message: string;
+  replayed?: boolean;
   data?: {
     paymentId: string;
     clientSecret: string;
     amount: number;
     gearTitle: string;
+    deposit?: {
+      amount: number;
+      clientSecret: string | null;
+      status: string;
+    };
   };
 }
 
@@ -22,19 +28,27 @@ interface CreatePaymentResult {
  * can collect card details and call stripe.confirmPayment() directly
  * against Stripe, client-side.
  */
-export async function createPaymentAction(rentalOrderId: string): Promise<CreatePaymentResult> {
+export async function createPaymentAction(
+  rentalOrderId: string,
+  idempotencyKey?: string,
+): Promise<CreatePaymentResult> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('accessToken')?.value;
+
+    const key = idempotencyKey ?? crypto.randomUUID();
 
     const res = await fetch(`${process.env.BACKEND_API_URL}/api/payments/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-         Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
+        'Idempotency-Key': key,
       },
       body: JSON.stringify({ rentalOrderId, method: 'STRIPE' }),
     });
+
+    const replayed = res.headers.get('Idempotency-Replayed') === 'true';
 
     const result = await res.json();
 
@@ -45,6 +59,7 @@ export async function createPaymentAction(rentalOrderId: string): Promise<Create
     return {
       success: true,
       message: result.message,
+      replayed,
       data: {
         paymentId: result.data.payment.id,
         clientSecret: result.data.clientSecret,
@@ -52,6 +67,13 @@ export async function createPaymentAction(rentalOrderId: string): Promise<Create
         // once, here, so every consumer downstream gets a real number.
         amount: Number(result.data.payment.amount),
         gearTitle: result.data.payment.rentalOrder.gear.title,
+        deposit: result.data.deposit?.clientSecret
+          ? {
+              amount: Number(result.data.deposit.amount),
+              clientSecret: result.data.deposit.clientSecret,
+              status: result.data.deposit.status,
+            }
+          : undefined,
       },
     };
   } catch {

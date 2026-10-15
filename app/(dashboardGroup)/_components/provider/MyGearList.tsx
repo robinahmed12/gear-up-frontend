@@ -2,9 +2,10 @@
 // app/(dashboardGroup)/_components/provider/MyGearList.tsx
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Pencil, Trash2, PackagePlus, Loader2 } from "lucide-react";
+import { Pencil, Trash2, PackagePlus, Loader2, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   useDeleteGear,
@@ -12,6 +13,7 @@ import {
 } from "@/hooks/use-provider-gear-query";
 import type { Gear } from "@/lib/types";
 import { toast } from "sonner";
+import { AvailabilityBlocksDialog } from "./AvailabilityBlocksDialog";
 
 interface MyGearListProps {
   gear: Gear[];
@@ -20,6 +22,7 @@ interface MyGearListProps {
 export function MyGearList({ gear }: MyGearListProps) {
   const deleteGear = useDeleteGear();
   const toggleAvailability = useToggleGearAvailability();
+  const [blocksGear, setBlocksGear] = useState<Gear | null>(null);
 
   if (gear.length === 0) {
     return (
@@ -124,6 +127,14 @@ export function MyGearList({ gear }: MyGearListProps) {
               </td>
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setBlocksGear(item)}
+                    aria-label="Blocked dates"
+                  >
+                    <Calendar className="h-4 w-4" />
+                  </Button>
                   <Button asChild variant="ghost" size="icon">
                     <Link
                       href={`/provider-dashboard/gear/${item.id}/edit`}
@@ -195,6 +206,14 @@ export function MyGearList({ gear }: MyGearListProps) {
               </button>
 
               <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBlocksGear(item)}
+                >
+                  <Calendar className="h-3.5 w-3.5" />
+                  Blocked dates
+                </Button>
                 <Button asChild variant="outline" size="sm">
                   <Link href={`/provider-dashboard/gear/${item.id}/edit`}>
                     <Pencil className="h-3.5 w-3.5" />
@@ -216,6 +235,15 @@ export function MyGearList({ gear }: MyGearListProps) {
           </div>
         ))}
       </div>
+
+      <AvailabilityBlocksDialog
+        gearId={blocksGear?.id ?? ""}
+        gearName={blocksGear?.title}
+        open={blocksGear !== null}
+        onOpenChange={(open) => {
+          if (!open) setBlocksGear(null);
+        }}
+      />
     </div>
   );
 }

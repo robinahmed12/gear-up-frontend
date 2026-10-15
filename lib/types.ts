@@ -21,7 +21,12 @@ export type RentalStatus =
   | 'RETURNED'
   | 'CANCELLED';
 
-export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+export type PaymentStatus =
+  | 'PENDING'
+  | 'COMPLETED'
+  | 'PARTIALLY_REFUNDED'
+  | 'REFUNDED'
+  | 'FAILED';
 export type PaymentMethod = 'STRIPE' | 'SSLCOMMERZ';
 
 export interface Category {
@@ -48,23 +53,31 @@ export interface Gear {
 }
 
 export interface provider {
-  id: number;
-  name: string
+  id: string;
+  name: string;
 }
 
 export interface RentalOrder {
   id: string;
   gearId: string;
   customerId: string;
+  customer?: { id: string; name: string; email: string };
   quantity: number;
   startDate: string;
   endDate: string;
   totalDays: number;
   pricePerDay: number;
+  subtotal: number;
+  serviceFee: number;
+  depositAmount: number;
+  taxAmount: number;
+  currency: string;
   totalAmount: number;
   status: RentalStatus;
-  provider: provider
-  gear: Gear
+  payment?: { id: string; status: PaymentStatus; method: PaymentMethod };
+  lineItems?: OrderLineItem[];
+  deposit?: Deposit;
+  gear: Gear;
 }
 export type NextStatus = Extract<RentalStatus, 'CONFIRMED' | 'PICKED_UP' | 'RETURNED'>;
 
@@ -73,9 +86,12 @@ export interface Payment {
   rentalOrderId: string;
   transactionId: string;
   amount: number;
+  currency: string;
   method: PaymentMethod;
   status: PaymentStatus;
   paidAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Review {
@@ -86,6 +102,98 @@ export interface Review {
   rating: number;
   comment?: string | null;
   createdAt: string;
+}
+
+export type OrderLineItemType =
+  | 'RENTAL'
+  | 'SERVICE_FEE'
+  | 'DEPOSIT'
+  | 'TAX'
+  | 'DAMAGE_FEE'
+  | 'LATE_FEE'
+  | 'REFUND'
+  | 'ADJUSTMENT';
+
+export interface OrderLineItem {
+  id: string;
+  rentalOrderId: string;
+  type: OrderLineItemType;
+  amount: number;
+  currency: string;
+  description?: string | null;
+  createdAt: string;
+}
+
+export interface RentalBreakdown {
+  id: string;
+  subtotal: number;
+  serviceFee: number;
+  depositAmount: number;
+  taxAmount: number;
+  totalAmount: number;
+  currency: string;
+  lineItems: OrderLineItem[];
+}
+
+export type DepositStatus = 'PENDING' | 'AUTHORIZED' | 'RELEASED' | 'CAPTURED' | 'FAILED';
+
+export interface Deposit {
+  id: string;
+  rentalOrderId: string;
+  amount: number;
+  currency: string;
+  status: DepositStatus;
+  stripePaymentIntentId?: string | null;
+  authorizedAt?: string | null;
+  releasedAt?: string | null;
+  capturedAt?: string | null;
+  capturedAmount?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type RefundStatus = 'PENDING' | 'SUCCEEDED' | 'FAILED';
+
+export interface Refund {
+  id: string;
+  paymentId: string;
+  amount: number;
+  currency: string;
+  reason?: string | null;
+  status: RefundStatus;
+  stripeRefundId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CancellationTier = 'FULL' | 'PARTIAL' | 'NONE';
+
+export interface CancellationOutcome {
+  tier: CancellationTier;
+  refundableAmount: number;
+  refundId: string | null;
+  depositReleased: boolean;
+}
+
+export interface AvailabilityResult {
+  available: boolean;
+  isAvailable: boolean;
+  stock: number;
+  reserved: number;
+  remaining: number;
+  quantity: number;
+  blocked: boolean;
+  reason?: string;
+}
+
+export interface AvailabilityBlock {
+  id: string;
+  gearId: string;
+  startDate: string;
+  endDate: string;
+  reason?: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Matches the backend's standard response envelope

@@ -4,6 +4,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import type { RentalStatus } from '@/lib/types';
 
 const API =
   process.env.BACKEND_API_URL || "http://localhost:5000";

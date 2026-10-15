@@ -17,6 +17,8 @@ export async function logoutAction() {
 
   cookieStore.delete('accessToken');
   cookieStore.delete('refreshToken');
+  cookieStore.delete('emailPendingVerification');
+  cookieStore.delete('pendingVerificationEmail');
     revalidatePath("/");
 
   redirect('/login');

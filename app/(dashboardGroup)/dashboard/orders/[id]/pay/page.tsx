@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createPaymentAction } from "../../../../_actions/paymentActions";
+import { getRentalBreakdownAction } from "../../../../_actions/rentalActions";
 import StripeCheckout from "@/app/(dashboardGroup)/_components/customer/StripeCheckout";
 
 interface PayPageProps {
@@ -9,19 +10,31 @@ interface PayPageProps {
 export default async function PayPage({ params }: PayPageProps) {
   const { id } = await params;
 
-  const result = await createPaymentAction(id);
+  const [paymentResult, breakdownResult] = await Promise.all([
+    createPaymentAction(id),
+    getRentalBreakdownAction(id),
+  ]);
 
-  if (!result.success || !result.data) {
-    redirect(
-      `/dashboard?paymentError=${encodeURIComponent(result.message)}`
-    );
+  if (!paymentResult.success || !paymentResult.data) {
+    redirect(`/dashboard?paymentError=${encodeURIComponent(paymentResult.message)}`);
   }
 
   return (
     <StripeCheckout
       orderId={id}
-      clientSecret={result.data.clientSecret}
-      amount={result.data.amount}
+      clientSecret={paymentResult.data.clientSecret}
+      amount={paymentResult.data.amount}
+      breakdown={breakdownResult.success ? breakdownResult.data : undefined}
+      deposit={
+        paymentResult.data.deposit &&
+        paymentResult.data.deposit.clientSecret
+          ? {
+              amount: paymentResult.data.deposit.amount,
+              clientSecret: paymentResult.data.deposit.clientSecret,
+              status: paymentResult.data.deposit.status,
+            }
+          : undefined
+      }
     />
   );
 }

@@ -12,7 +12,7 @@
 export const getNewAccessToken = async (
   refreshToken: string,
 ): Promise<
-  | { success: true; data: { accessToken: string } }
+  | { success: true; data: { accessToken: string; refreshToken: string } }
   | { success: false; message: string }
 > => {
   try {
@@ -24,11 +24,15 @@ export const getNewAccessToken = async (
 
     const result = await res.json();
 
-    if (!res.ok || !result?.data?.accessToken) {
+    // Backend returns the rotated pair as { user, token, refreshToken }.
+    if (!res.ok || !result?.data?.token || !result?.data?.refreshToken) {
       return { success: false, message: result?.message ?? 'Failed to refresh token' };
     }
 
-    return { success: true, data: { accessToken: result.data.accessToken } };
+    return {
+      success: true,
+      data: { accessToken: result.data.token, refreshToken: result.data.refreshToken },
+    };
   } catch {
     return { success: false, message: 'Failed to reach the backend to refresh the token' };
   }
