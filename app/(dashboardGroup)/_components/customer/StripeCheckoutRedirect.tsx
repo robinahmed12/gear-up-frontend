@@ -40,6 +40,13 @@ export function CheckoutForm({
     setErrorMessage(null);
 
     try {
+      // Submit the Payment Element for validation before any async confirm call.
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        setErrorMessage(submitError.message ?? 'Payment could not be processed.');
+        return;
+      }
+
       // confirmPayment drives the Payment Element (cards, wallets, redirect
       // methods). `redirect: 'if_required'` keeps us on the page for the
       // non-redirect case so we can also authorize the deposit hold before
