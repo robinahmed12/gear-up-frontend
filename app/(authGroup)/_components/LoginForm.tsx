@@ -28,6 +28,12 @@ const sidePanelFeatures = [
   { icon: MapPin, text: 'Pick up locally — no shipping wait' },
 ];
 
+const demoAccounts = [
+  { label: 'Customer', email: 'robin.gearup@gmail.com', password: 'Password@#12' },
+  { label: 'Provider', email: 'robin.gearup12@gmail.com', password: 'Password@#12' },
+  { label: 'Admin', email: 'admin@gearup.com', password: 'Admin@123' },
+] as const;
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,6 +46,7 @@ export function LoginForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -76,6 +83,12 @@ export function LoginForm() {
       router.push(destination);
       router.refresh();
     });
+  };
+
+  const handleDemoLogin = (account: (typeof demoAccounts)[number]) => {
+    setValue('email', account.email);
+    setValue('password', account.password);
+    handleSubmit(onSubmit)();
   };
 
   return (
@@ -224,6 +237,26 @@ export function LoginForm() {
               </Link>
             </p>
           </form>
+
+          <div className="mt-8 border-t pt-6">
+            <p className="text-center text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Try a demo account
+            </p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {demoAccounts.map((account) => (
+                <Button
+                  key={account.label}
+                  type="button"
+                  variant="outline"
+                  disabled={isPending}
+                  onClick={() => handleDemoLogin(account)}
+                  className="w-full"
+                >
+                  {account.label}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
