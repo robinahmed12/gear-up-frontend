@@ -50,8 +50,7 @@ export default function ReviewForm({ rentalOrderId, gearId, gearTitle }: ReviewF
       }
 
       toast.success(result.message);
-      router.push(`/gear/${gearId}`);
-      router.refresh();
+      router.replace(`/gear/${gearId}`);
     });
   };
 
