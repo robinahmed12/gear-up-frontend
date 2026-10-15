@@ -28,34 +28,29 @@ export function GearFormDialog({ mode, categories, gear }: GearFormDialogProps) 
   const [serverError, setServerError] = useState<string | null>(null);
   const [imageInput, setImageInput] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<GearFormValues>({
-    resolver: zodResolver(gearSchema),
-    defaultValues: gear
-      ? {
-          title: gear.title,
-          description: gear.description,
-          brand: gear.brand ?? '',
-          pricePerDay: gear.pricePerDay,
-          stock: gear.stock,
-          categoryId: gear.categoryId,
-          images: gear.images ?? [],
-        }
-      : {
-          title: '',
-          description: '',
-          brand: '',
-          pricePerDay: 0,
-          stock: 1,
-          categoryId: '',
-          images: [],
-        },
-  });
+    const form = useForm<GearFormValues>({
+      resolver: zodResolver(gearSchema),
+      defaultValues: gear
+        ? {
+            title: gear.title,
+            description: gear.description,
+            brand: gear.brand ?? '',
+            pricePerDay: gear.pricePerDay,
+            stock: gear.stock,
+            categoryId: gear.categoryId,
+            images: gear.images ?? [],
+          }
+        : {
+            title: '',
+            description: '',
+            brand: '',
+            pricePerDay: 0,
+            stock: 1,
+            categoryId: '',
+            images: [],
+          },
+    });
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = form;
 
   const images = watch('images');
 
@@ -74,25 +69,20 @@ export function GearFormDialog({ mode, categories, gear }: GearFormDialogProps) 
     );
   }
 
-  const onSubmit = (values: GearFormValues) => {
+  const onSubmit = async (values: GearFormValues) => {
     setServerError(null);
 
-    startTransition(async () => {
-      const result =
-        mode === 'create'
-          ? await createGearAction(values)
-          : await updateGearAction(gear!.id, values);
+    const result =
+      mode === 'create' ? await createGearAction(values) : await updateGearAction(gear!.id, values);
 
-      if (!result.success) {
-        setServerError(result.message);
-        toast.error(result.message);
-        return;
-      }
+    if (!result.success) {
+      setServerError(result.message);
+      toast.error(result.message);
+      return;
+    }
 
-      toast.success(result.message);
-      router.push('/provider-dashboard/gear');
-      router.refresh();
-    });
+    toast.success(result.message);
+    router.replace('/provider-dashboard/gear');
   };
 
   return (

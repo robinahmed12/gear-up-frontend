@@ -2,7 +2,7 @@
 // app/(dashboardGroup)/_components/provider/MyGearList.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Pencil, Trash2, PackagePlus, Loader2, Calendar } from "lucide-react";
@@ -22,9 +22,14 @@ interface MyGearListProps {
 export function MyGearList({ gear }: MyGearListProps) {
   const deleteGear = useDeleteGear();
   const toggleAvailability = useToggleGearAvailability();
+  const [items, setItems] = useState<Gear[]>(gear);
   const [blocksGear, setBlocksGear] = useState<Gear | null>(null);
 
-  if (gear.length === 0) {
+  useEffect(() => {
+    setItems(gear);
+  }, [gear]);
+
+  if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">
         <PackagePlus className="h-8 w-8 text-muted-foreground" />
@@ -48,7 +53,15 @@ export function MyGearList({ gear }: MyGearListProps) {
       description: "This action cannot be undone.",
       action: {
         label: "Delete",
-        onClick: () => deleteGear.mutate(id),
+        onClick: () => {
+          deleteGear.mutate(id, {
+            onSuccess: (result) => {
+              if (result.success) {
+                setItems((prev) => prev.filter((g) => g.id !== id));
+              }
+            },
+          });
+        },
       },
       cancel: {
         label: "Cancel",
@@ -81,7 +94,7 @@ export function MyGearList({ gear }: MyGearListProps) {
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          {gear.map((item) => (
+          {items.map((item) => (
             <tr key={item.id} className="hover:bg-muted/30">
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
@@ -147,11 +160,11 @@ export function MyGearList({ gear }: MyGearListProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDelete(item.id, item.title)}
-                    disabled={deleteGear.isPending}
+                    disabled={deleteGear.isPending && deleteGear.variables === item.id}
                     aria-label="Delete"
                     className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                   >
-                    {deleteGear.isPending ? (
+                    {deleteGear.isPending && deleteGear.variables === item.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Trash2 className="h-4 w-4" />
@@ -166,7 +179,7 @@ export function MyGearList({ gear }: MyGearListProps) {
 
       {/* Mobile cards */}
       <div className="divide-y divide-border sm:hidden">
-        {gear.map((item) => (
+        {items.map((item) => (
           <div key={item.id} className="space-y-3 p-4">
             <div className="flex items-center gap-3">
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -224,7 +237,7 @@ export function MyGearList({ gear }: MyGearListProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDelete(item.id, item.title)}
-                  disabled={deleteGear.isPending}
+                  disabled={deleteGear.isPending && deleteGear.variables === item.id}
                   className="text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
