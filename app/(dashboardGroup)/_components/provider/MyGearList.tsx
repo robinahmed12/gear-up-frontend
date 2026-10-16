@@ -278,15 +278,6 @@ export function MyGearList({ gear }: MyGearListProps) {
           </div>
         </div>
 
-        <Button
-          asChild
-          className="bg-accent text-accent-foreground hover:bg-accent/90"
-        >
-          <Link href="/provider-dashboard/gear/new">
-            <Plus className="h-4 w-4" />
-            Add gear
-          </Link>
-        </Button>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
