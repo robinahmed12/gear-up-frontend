@@ -84,22 +84,18 @@ export function Navbar({ user }: NavbarProps) {
 
     if (mega.label === 'Resources') {
       return (
-        <div className="hidden lg:block absolute right-0 top-full pt-2 z-50">
-          <div className="w-72 rounded-xl border border-border bg-card shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-primary/10 to-accent/10 px-5 py-4 border-b border-border">
-              <p className="text-sm font-semibold text-foreground">Resources</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Help, guides, and company info</p>
-            </div>
-            <div className="p-2">
+        <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50 w-[640px] max-w-[calc(100vw-2rem)]">
+          <div className="rounded-xl border border-border bg-card shadow-xl overflow-hidden">
+            <div className="grid grid-cols-2 gap-4 p-5">
               {flat.map((leaf) => (
                 <Link
                   key={leaf.label}
                   href={leaf.href!}
                   onClick={() => setActiveMenu(null)}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+                  className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3.5 text-sm text-foreground transition-colors hover:bg-muted hover:border-primary/30"
                 >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 shrink-0">
-                    <ChevronRight className="h-3.5 w-3.5 text-primary" />
+                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 shrink-0">
+                    <ChevronRight className="h-4 w-4 text-primary" />
                   </span>
                   {leaf.label}
                 </Link>
