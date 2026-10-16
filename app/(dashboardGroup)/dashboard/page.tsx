@@ -8,6 +8,16 @@ import { PageHeader } from '../_components/PageHeader';
 import { OrderStatusBadge } from '@/components/shared/order-status-badge';
 import { Button } from '@/components/ui/button';
 import { Payment, RentalOrder } from '@/lib/types';
+import CustomerRentalsChart from '../_components/customer/CustomerRentalsChart';
+
+const statusColor: Record<string, string> = {
+  PLACED: '#f59e0b',
+  CONFIRMED: '#3b82f6',
+  PAID: '#a855f7',
+  PICKED_UP: '#2f6b4f',
+  RETURNED: '#9ca3af',
+  CANCELLED: '#ef4444',
+};
 
 export default async function CustomerDashboardPage() {
   const [rentalsResult, paymentsResult] = await Promise.all([
@@ -104,6 +114,15 @@ export default async function CustomerDashboardPage() {
 
       {/* Recent rentals + quick links */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-1">
+          <CustomerRentalsChart
+            statusData={['PLACED','CONFIRMED','PAID','PICKED_UP','RETURNED','CANCELLED'].map((s) => ({
+              name: s,
+              value: rentals.filter((r: RentalOrder) => r.status === s).length,
+              color: statusColor[s] ?? '#999',
+            }))}
+          />
+        </div>
         <div className="rounded-xl border border-border bg-card shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between border-b border-border p-5">
             <h2 className="text-sm font-semibold text-foreground">Recent rentals</h2>
