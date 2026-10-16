@@ -140,6 +140,7 @@ export function Navbar({ user }: NavbarProps) {
                       className="text-sm font-medium text-muted-foreground hover:text-foreground flex items-center gap-1 px-1"
                       onMouseEnter={() => openMenu(link.label)}
                       onMouseLeave={scheduleCloseMenu}
+                      onClick={() => setActiveMenu(activeMenu === link.label ? null : link.label)}
                     >
                       {link.label}
                       <ChevronDown className={`h-4 w-4 transition-transform ${activeMenu === link.label ? 'rotate-180' : ''}`} />
