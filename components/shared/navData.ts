@@ -71,6 +71,35 @@ export const topNav: NavItem[] = [
       },
     ],
   },
+  {
+    label: 'Explore',
+    children: [
+      {
+        label: 'Activities',
+        children: [
+          { label: 'Camping Trips', href: '/gear?category=Camping' },
+          { label: 'Water Adventures', href: '/gear?category=Kayaks' },
+          { label: 'Winter Sports', href: '/gear?category=Snowboards' },
+        ],
+      },
+      {
+        label: 'Collections',
+        children: [
+          { label: 'Top Rated', href: '/gear?sort=rating' },
+          { label: 'New Arrivals', href: '/gear?sort=latest' },
+          { label: 'Budget Picks', href: '/gear?sort=price_asc' },
+        ],
+      },
+      {
+        label: 'Seasonal',
+        children: [
+          { label: 'Summer Essentials', href: '/gear?category=Camping' },
+          { label: 'Winter Gear', href: '/gear?category=Winter' },
+          { label: 'Rainy Day', href: '/gear?category=Safety' },
+        ],
+      },
+    ],
+  },
   { label: 'Rent Out', href: '/rent-out' },
   {
     label: 'Resources',

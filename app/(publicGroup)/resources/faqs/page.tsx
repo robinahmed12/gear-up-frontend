@@ -1,5 +1,4 @@
-﻿import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+﻿import FaqAccordion from './FaqAccordion';
 
 const faqs = [
   { q: 'How do I rent gear?', a: 'Browse available gear, filter by category or price, select your dates, and complete checkout. You will receive a confirmation with pickup details.' },
@@ -13,8 +12,6 @@ const faqs = [
 ];
 
 export default function Page() {
-  const [open, setOpen] = useState<number | null>(0);
-
   return (
     <div className="min-h-screen">
       <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background">
@@ -30,26 +27,7 @@ export default function Page() {
       </section>
 
       <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="space-y-3">
-          {faqs.map((faq, i) => (
-            <div key={i} className="rounded-xl border border-border bg-card shadow-sm">
-              <button
-                type="button"
-                onClick={() => setOpen(open === i ? null : i)}
-                className="flex w-full items-center justify-between gap-4 p-5 text-left"
-                aria-expanded={open === i}
-              >
-                <span className="text-sm font-semibold text-foreground">{faq.q}</span>
-                <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open === i ? 'rotate-180' : ''}`} />
-              </button>
-              {open === i && (
-                <div className="border-t border-border px-5 py-4">
-                  <p className="text-sm text-muted-foreground">{faq.a}</p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        <FaqAccordion faqs={faqs} />
       </section>
     </div>
   );
