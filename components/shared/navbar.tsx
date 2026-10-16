@@ -278,16 +278,9 @@ export function Navbar({ user }: NavbarProps) {
                   <Link
                     href="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-center rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-medium text-foreground hover:bg-secondary"
+                    className="flex items-center justify-center rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                   >
                     Log in
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-center rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-accent-foreground hover:bg-accent/90"
-                  >
-                    Sign up
                   </Link>
                 </div>
               )}
@@ -302,9 +295,20 @@ export function Navbar({ user }: NavbarProps) {
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <nav className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <PackageSearch className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-foreground">GearUp</span>
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
+            <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 shadow-sm transition-transform group-hover:scale-105">
+              <svg viewBox="0 0 24 24" className="h-5 w-5 text-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3L2 20h20L12 3z" />
+                <path d="M12 3v17" />
+                <path d="M7 13h10" />
+              </svg>
+            </span>
+            <span className="flex flex-col leading-none">
+              <span className="text-lg font-extrabold tracking-tight text-foreground">
+                Gear<span className="text-primary">Up</span>
+              </span>
+              <span className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">Rentals</span>
+            </span>
           </Link>
 
           <div className="hidden lg:flex lg:items-center lg:gap-1">
@@ -382,16 +386,11 @@ export function Navbar({ user }: NavbarProps) {
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              ) : (
+                <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
                   <Link href="/login">Log in</Link>
                 </Button>
-                <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
-                  <Link href="/register">Sign up</Link>
-                </Button>
-              </div>
-            )}
+              )}
           </div>
 
           <button

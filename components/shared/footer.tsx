@@ -37,9 +37,20 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:grid-cols-5">
           {/* Brand column */}
           <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2">
-              <PackageSearch className="h-6 w-6 text-sidebar-primary" />
-              <span className="text-xl font-bold">GearUp</span>
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-sidebar-primary to-sidebar-primary/80 shadow-sm transition-transform group-hover:scale-105">
+                <svg viewBox="0 0 24 24" className="h-5 w-5 text-sidebar-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3L2 20h20L12 3z" />
+                  <path d="M12 3v17" />
+                  <path d="M7 13h10" />
+                </svg>
+              </span>
+              <span className="flex flex-col leading-none">
+                <span className="text-lg font-extrabold tracking-tight text-sidebar-foreground">
+                  Gear<span className="text-sidebar-primary">Up</span>
+                </span>
+                <span className="text-[10px] font-medium text-sidebar-foreground/60 tracking-widest uppercase">Rentals</span>
+              </span>
             </Link>
             <p className="mt-3 max-w-xs text-sm text-sidebar-foreground/70">
               Rent sports and outdoor gear by the day, from real local

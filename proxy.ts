@@ -4,7 +4,7 @@ import { getNewAccessToken } from './service/refreshToken';
 import { jwtUtils } from './utils/jwt';
 
 const AUTH_ROUTES = ['/login', '/register'];
-const PUBLIC_ROUTES = ['/', '/gear', '/forgot-password', '/reset-password'];
+const PUBLIC_ROUTES = ['/', '/gear', '/forgot-password', '/reset-password', '/rent-out', '/resources'];
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 

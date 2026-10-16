@@ -75,10 +75,19 @@ export function DashboardSidebar({
           onClick={onNavigate}
           className="flex items-center gap-2.5"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <PackageSearch className="h-5 w-5" />
+          <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-sidebar-primary to-sidebar-primary/80 shadow-sm">
+            <svg viewBox="0 0 24 24" className="h-5 w-5 text-sidebar-primary-foreground" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3L2 20h20L12 3z" />
+              <path d="M12 3v17" />
+              <path d="M7 13h10" />
+            </svg>
           </span>
-          <span className="text-lg font-bold tracking-tight">GearUp</span>
+          <span className="flex flex-col leading-none">
+            <span className="text-lg font-extrabold tracking-tight">
+              Gear<span className="text-sidebar-primary">Up</span>
+            </span>
+            <span className="text-[10px] font-medium text-sidebar-foreground/60 tracking-widest uppercase">Rentals</span>
+          </span>
         </Link>
 
         {onClose && (
