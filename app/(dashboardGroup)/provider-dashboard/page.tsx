@@ -8,6 +8,7 @@ import { StatCard } from '../_components/admin/StatCard';
 import { PageHeader } from '../_components/PageHeader';
 import { OrderStatusBadge } from '@/components/shared/order-status-badge';
 import { Button } from '@/components/ui/button';
+import ProviderOverviewCharts from '../_components/provider/ProviderOverviewCharts';
 
 export default async function DashboardgroupProviderDashboardPage() {
   const [gearResult, ordersResult] = await Promise.all([
@@ -79,7 +80,18 @@ export default async function DashboardgroupProviderDashboardPage() {
         </div>
       )}
 
-      {/* Recent orders + quick links */}
+      <ProviderOverviewCharts
+    statusData={Object.entries(
+      orders.reduce<Record<string, number>>((acc, order) => {
+        acc[order.status] = (acc[order.status] ?? 0) + 1;
+        return acc;
+      }, {}),
+    ).map(([name, value]) => ({ name, value }))}
+    gearAvailable={gear.filter((g) => g.isAvailable).length}
+    gearTotal={gear.length}
+  />
+
+  {/* Recent orders + quick links */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="rounded-xl border border-border bg-card shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between border-b border-border p-5">
