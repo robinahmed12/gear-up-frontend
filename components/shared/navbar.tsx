@@ -221,7 +221,14 @@ export function Navbar({ user }: NavbarProps) {
         </div>
       </div>
 
-      {activeMenu && renderMega()}
+      {activeMenu && (
+        <div
+          onMouseEnter={() => openMenu(activeMenu)}
+          onMouseLeave={scheduleCloseMenu}
+        >
+          {renderMega()}
+        </div>
+      )}
 
       {isMobileMenuOpen && (
         <div className="border-t border-border py-4 lg:hidden">
