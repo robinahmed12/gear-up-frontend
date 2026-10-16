@@ -59,7 +59,11 @@ export function LoginForm() {
       const result = await loginAction(values);
 
       if (result.success) {
-        toast.success(`Login  successfully as ${result.data.user.role} `)
+        toast.success(`Login  successfully as ${result.data.user.role} `);
+        // Clear any stale pending-verification flags so proxy lets the user
+        // through to their dashboard after logging in as a verified account.
+        document.cookie = 'emailPendingVerification=; max-age=0; path=/';
+        document.cookie = 'pendingVerificationEmail=; max-age=0; path=/';
       }
 
       if (!result.success) {
